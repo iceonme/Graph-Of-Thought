@@ -41,7 +41,9 @@ function App() {
     files: [],
     processing: false
   });
-  const [selectedModel, setSelectedModel] = useState('gpt-3.5-turbo'); // Added state for selected model
+  const [selectedModel, setSelectedModel] = useState('gpt-3.5-turbo');
+  const [error, setError] = useState<string | null>(null); // Added error state
+
 
   const handleDeleteNode = useCallback((nodeId: string) => {
     setNodes((nds) => nds.filter((node) => node.id !== nodeId));
@@ -215,18 +217,25 @@ function App() {
       updateSelectedNode(newNodeId);
     } catch (error) {
       console.error('Error creating node:', error);
-      // 更新节点显示错误信息
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setError(errorMessage);
+
+      // Update node with error state
       setNodes((nds) => nds.map(node => 
         node.id === newNodeId
           ? {
               ...node,
               data: {
                 ...node.data,
-                response: '抱歉，发生了错误：' + (error instanceof Error ? error.message : String(error))
+                response: '抱歉，发生了错误：' + errorMessage,
+                error: true
               }
             }
           : node
       ));
+
+      // Clear error after 5 seconds
+      setTimeout(() => setError(null), 5000);
     }
   }, [nodes, edges, selectedModel, setNodes, setEdges, updateSelectedNode]);
 
@@ -317,17 +326,22 @@ function App() {
 
   } catch (error) {
     console.error('Error in follow-up:', error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    setError(errorMessage);
+
     setNodes((nds) => nds.map(node => 
       node.id === newNodeId
         ? {
             ...node,
             data: {
               ...node.data,
-              response: '抱歉，发生了错误：' + (error instanceof Error ? error.message : String(error))
+              response: '抱歉，发生了错误：' + errorMessage,
+              error: true
             }
           }
         : node
     ));
+    setTimeout(() => setError(null), 5000);
   }
   }, [nodes, edges, selectedModel, setNodes, setEdges, updateSelectedNode]);
 
@@ -526,8 +540,9 @@ function App() {
           onInitialQuestion={createNewNodes}
           onFileUpload={handleFileUpload}
           onUpdateNodeLLM={handleUpdateNodeLLM}
-          selectedModel={selectedModel} // Pass selectedModel to ChatPanel
-          setSelectedModel={setSelectedModel} //Pass setSelectedModel to ChatPanel
+          selectedModel={selectedModel}
+          setSelectedModel={setSelectedModel}
+          error={error} // Pass error state to ChatPanel
         />
       </div>
     </div>

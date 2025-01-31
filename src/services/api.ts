@@ -43,14 +43,23 @@ export class APIService {
         });
 
         if (!response.ok) {
-          const error = await response.json();
-          console.log('API Error details:', error);
+          let errorText;
+          try {
+            const error = await response.json();
+            errorText = error.error?.message || error.message;
+          } catch (e) {
+            errorText = `HTTP error! status: ${response.status}`;
+          }
+          
+          console.log('API Error details:', errorText);
+          
           if (i < retryCount - 1) {
             console.log(`Retrying... (${i + 1}/${retryCount})`);
-            await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1))); // 增加重试间隔
+            await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i))); // 指数退避重试
             continue;
           }
-          throw new Error(`DeepSeek API 错误 (尝试 ${retryCount} 次后失败): ${error.error?.message || error.message || `HTTP error! status: ${response.status}`}`);
+          
+          throw new Error(`DeepSeek API 错误 (尝试 ${retryCount} 次后失败): ${errorText}`);
         }
 
         const data = await response.json();
