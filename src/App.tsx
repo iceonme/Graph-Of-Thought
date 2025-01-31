@@ -200,28 +200,29 @@ function App() {
       // 调用 API 获取回答
       const response = await llmService.chat(messages);
 
-      // 更新节点状态并获取回答
-      setNodes((nds) => nds.map(node => 
-        node.id === newNodeId 
-          ? {
-              ...node,
-              data: {
-                ...node.data,
-                response: ''
-              }
-            }
-          : node
-      ));
-
-      // 获取回答并流式更新
+      let currentResponse = '';
+      
+      // 获取回答并同步更新对话页和卡片
       const result = await llmService.chat(messages, (content) => {
+        currentResponse += content;
+        
+        // 先更新对话页(selectedNode)
+        setSelectedNode(prev => prev && prev.id === newNodeId ? {
+          ...prev,
+          data: {
+            ...prev.data,
+            response: currentResponse
+          }
+        } : prev);
+        
+        // 再更新卡片
         setNodes((nds) => nds.map(node => 
           node.id === newNodeId 
             ? {
                 ...node,
                 data: {
                   ...node.data,
-                  response: node.data.response + content
+                  response: currentResponse
                 }
               }
             : node
