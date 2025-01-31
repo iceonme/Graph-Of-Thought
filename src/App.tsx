@@ -198,14 +198,25 @@ function App() {
       setSelectedNode(newNodes[0]);
 
       // 调用 API 获取回答
-      const response = await llmService.chat(messages);
+      let fullResponse = '';
+      const response = await llmService.chat(messages, (chunk) => {
+        fullResponse += chunk;
+        setNodes((nds) => nds.map(node => 
+          node.id === newNodeId ? {
+            ...node,
+            data: {
+              ...node.data,
+              response: fullResponse
+            }
+          } : node
+        ));
+      });
 
-      // 更新节点的回答
       const updatedNode = {
         ...newNode,
         data: {
           ...newNode.data,
-          response
+          response: fullResponse
         }
       };
       
