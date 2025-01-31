@@ -1,11 +1,7 @@
 import React, { memo, useState } from 'react';
 import { Handle, Position } from 'reactflow';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
-import rehypeSanitize from 'rehype-sanitize';
+import MarkdownPreview from '@uiw/react-markdown-preview';
 import { PROVIDERS } from '../types/llm';
-import 'github-markdown-css';
 
 interface ChatNodeProps {
   data: { 
@@ -65,16 +61,7 @@ function ChatNode({ data, selected }: ChatNodeProps) {
           <div className="bg-gray-50 rounded-lg p-3">
             <p className="font-medium text-sm text-blue-600 mb-1">问题：</p>
             <div className="text-gray-600 text-sm line-clamp-2">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw, rehypeSanitize]}
-                className="markdown-body text-sm"
-                components={{
-                  p: ({node, ...props}) => <p className="my-1" {...props} />
-                }}
-              >
-                {data.content}
-              </ReactMarkdown>
+              <MarkdownPreview source={data.content} />
             </div>
           </div>
 
