@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import { PROVIDERS } from '../types/llm';
-import 'github-markdown-css/github-markdown.css';
+import 'github-markdown-css';
 
 interface ChatNodeProps {
   data: { 
@@ -36,7 +36,7 @@ function ChatNode({ data, selected }: ChatNodeProps) {
         position={Position.Top}
         style={{ top: -6 }}
       />
-
+      
       {(showDeleteButton || selected) && data.onDelete && (
         <button
           onClick={(e) => {
@@ -50,7 +50,7 @@ function ChatNode({ data, selected }: ChatNodeProps) {
           </svg>
         </button>
       )}
-
+      
       <div className="p-4">
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-2 mb-3">
           <h3 className="font-bold text-gray-800 text-lg">{data.label}</h3>
@@ -65,24 +65,28 @@ function ChatNode({ data, selected }: ChatNodeProps) {
           <div className="bg-gray-50 rounded-lg p-3">
             <p className="font-medium text-sm text-blue-600 mb-1">问题：</p>
             <div className="text-gray-600 text-sm line-clamp-2">
-              <div>{data.content}</div>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                className="markdown-body text-sm"
+                components={{
+                  p: ({node, ...props}) => <p className="my-1" {...props} />
+                }}
+              >
+                {data.content}
+              </ReactMarkdown>
             </div>
           </div>
 
           <div className="bg-blue-50 rounded-lg p-3">
             <p className="font-medium text-sm text-blue-600 mb-1">回答</p>
-            <div className="text-gray-600 text-sm markdown-body">
+            <div className="text-gray-600 text-sm line-clamp-2">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw, rehypeSanitize]}
-                className="markdown-body text-sm prose prose-sm max-w-none"
+                className="markdown-body text-sm"
                 components={{
-                  p: ({node, ...props}) => <p className="my-1" {...props} />,
-                  pre: ({node, ...props}) => <pre className="bg-gray-50 rounded p-2" {...props} />,
-                  code: ({node, inline, ...props}) => 
-                    inline ? 
-                      <code className="bg-gray-100 px-1 rounded" {...props} /> :
-                      <code {...props} />
+                  p: ({node, ...props}) => <p className="my-1" {...props} />
                 }}
               >
                 {data.response}
