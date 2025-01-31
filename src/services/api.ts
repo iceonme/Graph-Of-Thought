@@ -28,13 +28,14 @@ export class APIService {
           'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-          model: config.model,
+          model: "deepseek-chat",
           messages,
           temperature: config.temperature || 0.7,
           max_tokens: config.max_tokens || 1000,
           top_p: config.top_p || 1,
           frequency_penalty: config.frequency_penalty || 0,
-          presence_penalty: config.presence_penalty || 0
+          presence_penalty: config.presence_penalty || 0,
+          stream: false
         })
       });
 
