@@ -89,13 +89,27 @@ export class LayoutManager {
       return this.findNextAvailablePosition(basePosition, nodes);
     }
 
-    // 对于子节点，优先尝试在父节点下方
-    const basePosition = {
-      x: parentNode.position.x,
-      y: parentNode.position.y + this.VERTICAL_SPACING
-    };
+    // 对于子节点，查找已有的子节点
+    const existingChildren = nodes.filter(node => 
+      edges.some(edge => edge.source === parentNode.id && edge.target === node.id)
+    );
 
-    return this.findNextAvailablePosition(basePosition, nodes);
+    if (existingChildren.length === 0) {
+      // 第一个子节点放在父节点下方
+      const basePosition = {
+        x: parentNode.position.x,
+        y: parentNode.position.y + this.VERTICAL_SPACING
+      };
+      return this.findNextAvailablePosition(basePosition, nodes);
+    } else {
+      // 后续子节点和第一个子节点保持同一水平线，向右偏移
+      const lastChild = existingChildren[existingChildren.length - 1];
+      const basePosition = {
+        x: lastChild.position.x + this.HORIZONTAL_SPACING,
+        y: lastChild.position.y
+      };
+      return this.findNextAvailablePosition(basePosition, nodes);
+    }
   }
 
   static getFileNodesPositions(nodes: Node[], fileCount: number): Position[] {
