@@ -218,7 +218,7 @@ function ChatPanel({
               )}
             </div>
 
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto markdown-body">
               <div className="p-6 space-y-6">
                 {isCreatingEmpty ? (
                   <div className="flex flex-col items-center justify-center h-full space-y-4">
