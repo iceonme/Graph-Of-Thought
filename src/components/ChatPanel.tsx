@@ -2,7 +2,6 @@ import React, { useState, useCallback, useRef } from 'react';
 import { Node } from 'reactflow';
 import FloatingToolbar from './FloatingToolbar';
 import QuestionDialog from './QuestionDialog';
-import ModelSelector from './ModelSelector';
 import { useLLM } from '../hooks/useLLM';
 import 'github-markdown-css';
 
@@ -80,13 +79,11 @@ function ChatPanel({
     if (!chatInput.trim()) return;
 
     if (node && !isCreatingEmpty && onAskFollowUp) {
-      // 如果是在已有节点上继续对话
       onAskFollowUp(node, chatInput, '继续对话');
     } else if (onInitialQuestion) {
-      // 如果是新建对话
       onInitialQuestion(chatInput);
     }
-    
+
     setChatInput('');
     setTimeout(() => {
       chatInputRef.current?.focus();
@@ -120,7 +117,7 @@ function ChatPanel({
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragActive(false);
-    
+
     const files = Array.from(e.dataTransfer.files);
     files.forEach(file => {
       if (onFileUpload) {
@@ -147,15 +144,10 @@ function ChatPanel({
                 开始你的第一个问题，创建对话流程图。后续可以通过选中文本进行追问，或继续对话来扩展你的思维导图。
               </p>
               <div className="mt-4 w-full max-w-md">
-                <MultiModelSelector
-                  selectedProviders={selectedProviders}
-                  onToggleProvider={toggleProvider}
-                  onModelChange={handleModelChange}
-                  className="bg-gray-50 p-4 rounded-lg"
-                />
+                {/* MultiModelSelector removed */}
               </div>
             </div>
-            
+
             <div className="p-4 border-t bg-gray-50">
               <form onSubmit={handleChatSubmit} className="space-y-4">
                 <div
@@ -208,12 +200,7 @@ function ChatPanel({
             <div className="p-6 border-b">
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-900">{node.data.label}</h2>
-                <MultiModelSelector
-                  selectedProviders={selectedProviders}
-                  onToggleProvider={toggleProvider}
-                  onModelChange={handleModelChange}
-                  className="bg-gray-50 p-4 rounded-lg"
-                />
+                {/* MultiModelSelector removed */}
               </div>
               {inputNodes.length > 0 && (
                 <div className="mt-4">
