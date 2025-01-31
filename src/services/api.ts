@@ -40,7 +40,8 @@ export class APIService {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error?.message || `HTTP error! status: ${response.status}`);
+        console.log('API Error details:', error); // 添加详细日志
+        throw new Error(error.error?.message || error.message || `HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
