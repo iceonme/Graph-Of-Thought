@@ -8,9 +8,9 @@ export class LLMService {
     this.config = config;
   }
 
-  async chat(messages: ChatMessage[]): Promise<string> {
+  async chat(messages: ChatMessage[], onStream?: (content: string) => void): Promise<string> {
     try {
-      return await api.chat(messages, this.config);
+      return await api.chat(messages, this.config, onStream);
     } catch (error) {
       console.error('LLM Error:', error);
       throw error;

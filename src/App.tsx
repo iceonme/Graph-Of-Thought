@@ -201,6 +201,33 @@ function App() {
       const response = await llmService.chat(messages);
 
       // 更新节点的回答
+      setNodes((nds) => nds.map(node => 
+        node.id === newNodeId 
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                response: ''
+              }
+            }
+          : node
+      ));
+
+      // 获取回答并流式更新
+      const response = await llmService.chat(messages, (content) => {
+        setNodes((nds) => nds.map(node => 
+          node.id === newNodeId 
+            ? {
+                ...node,
+                data: {
+                  ...node.data,
+                  response: node.data.response + content
+                }
+              }
+            : node
+        ));
+      });
+
       const updatedNode = {
         ...newNode,
         data: {

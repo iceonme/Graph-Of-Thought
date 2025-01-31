@@ -13,7 +13,7 @@ export class APIService {
     return APIService.instance;
   }
 
-  async chat(messages: ChatMessage[], config: LLMConfig): Promise<string> {
+  async chat(messages: ChatMessage[], config: LLMConfig, onStream?: (content: string) => void): Promise<string> {
     const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY;
     if (!apiKey) {
       throw new Error('API key not found - please set VITE_DEEPSEEK_API_KEY in Secrets');
@@ -81,7 +81,10 @@ export class APIService {
               try {
                 const json = JSON.parse(jsonStr);
                 const content = json.choices[0]?.delta?.content;
-                if (content) result += content;
+                if (content) {
+                  result += content;
+                  onStream?.(content);
+                }
               } catch (e) {
                 console.error('解析响应数据出错:', e);
               }
