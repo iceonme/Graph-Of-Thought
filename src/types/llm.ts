@@ -1,8 +1,7 @@
 
-export interface ChatMessage {
-  role: 'system' | 'user' | 'assistant';
-  content: string;
-}
+import { ChatCompletionRequestMessage } from 'openai';
+
+export type ChatMessage = ChatCompletionRequestMessage;
 
 export interface LLMConfig {
   model: string;
@@ -13,7 +12,12 @@ export interface LLMConfig {
   presence_penalty?: number;
 }
 
-export const OPENAI_MODELS = ['gpt-4', 'gpt-3.5-turbo'];
+export const OPENAI_MODELS = [
+  'gpt-4',
+  'gpt-4-32k',
+  'gpt-3.5-turbo',
+  'gpt-3.5-turbo-16k',
+];
 
 export const PROVIDERS = [
   {
