@@ -1,9 +1,13 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { Node } from 'reactflow';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
 import FloatingToolbar from './FloatingToolbar';
 import QuestionDialog from './QuestionDialog';
 import { useLLM } from '../hooks/useLLM';
-import 'github-markdown-css';
+import 'github-markdown-css/github-markdown.css';
 
 interface ChatPanelProps {
   node: Node | null;
@@ -230,18 +234,28 @@ function ChatPanel({
                   <>
                     <div>
                       <h3 className="text-sm font-medium text-gray-500 mb-2">问题</h3>
-                      <div className="prose prose-sm max-w-none">
-                        <div className="text-gray-700">
-                          {node?.data.content}
-                        </div>
+                      <div className="prose prose-sm max-w-none markdown-body">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                          className="markdown-body"
+                        >
+                          {node?.data.content || ''}
+                        </ReactMarkdown>
                       </div>
                     </div>
 
                     <div>
                       <h3 className="text-sm font-medium text-gray-500 mb-2">回答</h3>
-                      <div className="prose prose-sm max-w-none">
+                      <div className="prose prose-sm max-w-none markdown-body">
                         <div className={`${node?.data.error ? 'text-red-600' : 'text-gray-700'}`}>
-                          {node?.data.response}
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                            className="markdown-body"
+                          >
+                            {node?.data.response || ''}
+                          </ReactMarkdown>
                           {node?.data.error && (
                             <div className="mt-4">
                               <button
