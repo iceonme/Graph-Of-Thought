@@ -140,7 +140,6 @@ function ChatPanel({
                 开始你的第一个问题，创建对话流程图。后续可以通过选中文本进行追问，或继续对话来扩展你的思维导图。
               </p>
               <div className="mt-4 w-full max-w-md">
-                {/* Model selection removed */}
               </div>
             </div>
 
@@ -195,8 +194,7 @@ function ChatPanel({
           <>
             <div className="p-6 border-b">
               <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-900">{node.data.label}</h2>
-                {/* MultiModelSelector removed */}
+                <h2 className="text-2xl font-bold text-gray-900">{node?.data.label}</h2>
               </div>
               {inputNodes.length > 0 && (
                 <div className="mt-4">
@@ -229,7 +227,7 @@ function ChatPanel({
                       <h3 className="text-sm font-medium text-gray-500 mb-2">问题</h3>
                       <div className="prose prose-sm max-w-none">
                         <div className="text-gray-700">
-                          {node.data.content}
+                          {node?.data.content}
                         </div>
                       </div>
                     </div>
@@ -238,7 +236,7 @@ function ChatPanel({
                       <h3 className="text-sm font-medium text-gray-500 mb-2">回答</h3>
                       <div className="prose prose-sm max-w-none">
                         <div className="text-gray-700">
-                          {node.data.response}
+                          {node?.data.response}
                         </div>
                       </div>
                     </div>
