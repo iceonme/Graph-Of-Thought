@@ -39,6 +39,7 @@ function App() {
     files: [],
     processing: false
   });
+  const [selectedModel, setSelectedModel] = useState('gpt-3.5-turbo'); // Added state for selected model
 
   const handleDeleteNode = useCallback((nodeId: string) => {
     setNodes((nds) => nds.filter((node) => node.id !== nodeId));
@@ -70,7 +71,7 @@ function App() {
       const isCreatingCycle = (source: string, target: string, visited = new Set<string>()): boolean => {
         if (source === target) return true;
         if (visited.has(target)) return false;
-        
+
         visited.add(target);
         const outgoingEdges = edges.filter(edge => edge.source === target);
         return outgoingEdges.some(edge => isCreatingCycle(source, edge.target, visited));
@@ -91,15 +92,15 @@ function App() {
 
   const handleNodesChange = useCallback((changes: any[]) => {
     onNodesChange(changes);
-    
+
     const selectionChange = changes.find(
       change => change.type === 'select' && change.selected !== undefined
     );
-    
+
     if (selectionChange) {
       const nodeId = selectionChange.id;
       const isSelected = selectionChange.selected;
-      
+
       if (isSelected) {
         const node = nodes.find(n => n.id === nodeId);
         if (node) {
@@ -118,110 +119,106 @@ function App() {
   };
 
   const createNewNodes = useCallback((question: string, parentNode?: Node) => {
-    const providers = selectedProviders.length > 0 ? selectedProviders : [{
+    const provider = {
       providerId: 'openai',
-      model: 'gpt-3.5-turbo'
-    }];
+      model: selectedModel
+    };
 
     const newNodes: Node[] = [];
     const newEdges: Edge[] = [];
     const basePosition = LayoutManager.getNewNodePosition(nodes, parentNode);
 
-    providers.forEach(({ providerId, model }, index) => {
-      const offsetX = index * 320;
-      const newNodeId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${index}`;
-      
-      const newNode: Node = {
-        id: newNodeId,
-        type: 'chatNode',
-        position: {
-          x: basePosition.x + offsetX,
-          y: basePosition.y
-        },
-        data: {
-          label: `${parentNode ? '继续对话' : '初始问题'} (${providerId})`,
-          content: question,
-          response: '等待回答...',
-          llmConfig: {
-            providerId,
-            model
-          }
-        },
-        selected: index === 0
+    const { providerId, model } = provider;
+
+    const newNodeId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+    const newNode: Node = {
+      id: newNodeId,
+      type: 'chatNode',
+      position: basePosition,
+      data: {
+        label: `${parentNode ? '继续对话' : '初始问题'} (${providerId})`,
+        content: question,
+        response: '等待回答...',
+        llmConfig: {
+          providerId,
+          model
+        }
+      },
+      selected: true
+    };
+
+    if (parentNode) {
+      const newEdge: Edge = {
+        id: `e${parentNode.id}-${newNodeId}`,
+        source: parentNode.id,
+        target: newNodeId,
       };
+      newEdges.push(newEdge);
+    }
 
-      if (parentNode) {
-        const newEdge: Edge = {
-          id: `e${parentNode.id}-${newNodeId}`,
-          source: parentNode.id,
-          target: newNodeId,
-        };
-        newEdges.push(newEdge);
-      }
+    newNodes.push(newNode);
 
-      newNodes.push(newNode);
-    });
 
     setNodes((nds) => [...nds.map(n => ({ ...n, selected: false })), ...newNodes]);
     setEdges((eds) => [...eds, ...newEdges]);
     setSelectedNode(newNodes[0]);
     setIsCreatingEmptyNode(false);
     updateSelectedNode(newNodes[0].id);
-  }, [nodes, selectedProviders, setNodes, setEdges, updateSelectedNode]);
+  }, [nodes, selectedModel, setNodes, setEdges, updateSelectedNode]);
 
   const handleAskFollowUp = useCallback((parentNode: Node, question: string, selectedText: string) => {
-    const providers = selectedProviders.length > 0 ? selectedProviders : [{
+    const provider = {
       providerId: 'openai',
-      model: 'gpt-3.5-turbo'
-    }];
+      model: selectedModel
+    };
 
     const newNodes: Node[] = [];
     const newEdges: Edge[] = [];
     const basePosition = LayoutManager.getNewNodePosition(nodes, parentNode);
 
-    providers.forEach(({ providerId, model }, index) => {
-      const offsetX = index * 320;
-      const newNodeId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${index}`;
-      
-      const newNode: Node = {
-        id: newNodeId,
-        type: 'chatNode',
-        position: {
-          x: basePosition.x + offsetX,
-          y: basePosition.y
-        },
-        data: {
-          label: `追问: ${selectedText.slice(0, 20)}... (${providerId})`,
-          content: question,
-          response: '等待回答...',
-          llmConfig: {
-            providerId,
-            model
-          }
-        },
-        selected: index === 0
-      };
+    const { providerId, model } = provider;
 
-      const newEdge: Edge = {
-        id: `e${parentNode.id}-${newNodeId}`,
-        source: parentNode.id,
-        target: newNodeId,
-      };
+    const newNodeId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-      newNodes.push(newNode);
-      newEdges.push(newEdge);
-    });
+    const newNode: Node = {
+      id: newNodeId,
+      type: 'chatNode',
+      position: {
+        x: basePosition.x,
+        y: basePosition.y
+      },
+      data: {
+        label: `追问: ${selectedText.slice(0, 20)}... (${providerId})`,
+        content: question,
+        response: '等待回答...',
+        llmConfig: {
+          providerId,
+          model
+        }
+      },
+      selected: true
+    };
+
+    const newEdge: Edge = {
+      id: `e${parentNode.id}-${newNodeId}`,
+      source: parentNode.id,
+      target: newNodeId,
+    };
+
+    newNodes.push(newNode);
+    newEdges.push(newEdge);
 
     setNodes((nds) => [...nds.map(n => ({ ...n, selected: false })), ...newNodes]);
     setEdges((eds) => [...eds, ...newEdges]);
     setSelectedNode(newNodes[0]);
     updateSelectedNode(newNodes[0].id);
-  }, [nodes, selectedProviders, setNodes, setEdges, updateSelectedNode]);
+  }, [nodes, selectedModel, setNodes, setEdges, updateSelectedNode]);
 
   const handleNewEmptyNode = useCallback(() => {
     const newNodeId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const newPosition = LayoutManager.getNewNodePosition(nodes);
-    
+
     const newNode: Node = {
       id: newNodeId,
       type: 'chatNode',
@@ -280,7 +277,7 @@ function App() {
       reader.onload = () => {
         const uniqueId = Math.random().toString(36).substr(2, 9);
         const newFileId = `file-${timestamp}-${uniqueId}`;
-        
+
         const fileNode: Node = {
           id: newFileId,
           type: 'fileNode',
@@ -302,7 +299,7 @@ function App() {
         if (fileNodes.length === uploadQueue.files.length) {
           const chatNodePosition = LayoutManager.getChatNodePositionForFiles([...nodes, ...fileNodes], fileNodes);
           const chatNodeId = `chat-${timestamp}-${Math.random().toString(36).substr(2, 9)}`;
-          
+
           const newChatNode: Node = {
             id: chatNodeId,
             type: 'chatNode',
@@ -354,7 +351,7 @@ function App() {
 
   const handleDrag = useCallback((e: MouseEvent) => {
     if (!isDragging) return;
-    
+
     const newWidth = (e.clientX / window.innerWidth) * 100;
     if (newWidth >= 30 && newWidth <= 70) {
       setLeftPanelWidth(newWidth);
@@ -396,14 +393,14 @@ function App() {
           <NewNodeButton onClick={handleNewEmptyNode} />
         </div>
       </div>
-      
+
       <div
         className="w-2 hover:bg-blue-200 cursor-col-resize transition-colors relative group size-handler"
         onMouseDown={handleDragStart}
       >
         <div className="absolute inset-y-0 -left-1 -right-1 group-hover:bg-blue-100 transition-colors" />
       </div>
-      
+
       <div style={{ width: `${100 - leftPanelWidth}%` }} className="h-full p-4">
         <ChatPanel 
           node={selectedNode}
@@ -413,6 +410,8 @@ function App() {
           onInitialQuestion={createNewNodes}
           onFileUpload={handleFileUpload}
           onUpdateNodeLLM={handleUpdateNodeLLM}
+          selectedModel={selectedModel} // Pass selectedModel to ChatPanel
+          setSelectedModel={setSelectedModel} //Pass setSelectedModel to ChatPanel
         />
       </div>
     </div>
