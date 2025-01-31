@@ -1,37 +1,29 @@
 import { ChatMessage, LLMConfig } from '../types/llm';
 
-export const api = {
-  async chat(messages: ChatMessage[], config: LLMConfig): Promise<string> {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ messages, config }),
-    });
+export class APIService {
+  private static instance: APIService;
+  private baseURL: string = 'https://api.deepseek.com/v1';
 
-    if (!response.ok) {
-      throw new Error('Chat request failed');
+  private constructor() {}
+
+  static getInstance(): APIService {
+    if (!APIService.instance) {
+      APIService.instance = new APIService();
     }
+    return APIService.instance;
+  }
 
-    const data = await response.json();
-    return data.response;
-  },
-
-  async chatStream(
-    messages: ChatMessage[],
-    config: LLMConfig,
-    onStream: (chunk: string) => void
-  ): Promise<string> {
+  async chat(messages: ChatMessage[], config: LLMConfig): Promise<string> {
     const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY;
     if (!apiKey) {
       throw new Error('API key not found - please set VITE_DEEPSEEK_API_KEY in Secrets');
     }
+
     const retryCount = 3; // 设置最大重试次数
 
     for (let i = 0; i < retryCount; i++) {
       try {
-        const response = await fetch(`/api/chat/stream`, {
+        const response = await fetch(`${this.baseURL}/chat/completions`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -44,8 +36,8 @@ export const api = {
               role: msg.role,
               content: msg.content
             })),
-            temperature: config.temperature || 0.7,
-            max_tokens: config.max_tokens || 2000,
+            temperature: 0.7,
+            max_tokens: 2000,
             stream: true
           })
         });
@@ -58,33 +50,46 @@ export const api = {
           } catch (e) {
             errorText = `HTTP error! status: ${response.status}`;
           }
-
+          
           console.log('API Error details:', errorText);
-
+          
           if (i < retryCount - 1) {
             console.log(`Retrying... (${i + 1}/${retryCount})`);
             await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
             continue;
           }
-
+          
           throw new Error(`DeepSeek API 错误 (尝试 ${retryCount} 次后失败): ${errorText}`);
         }
 
         const reader = response.body?.getReader();
         if (!reader) throw new Error('无法获取响应流');
-        const decoder = new TextDecoder();
-        let fullResponse = '';
 
+        let result = '';
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-
-          const chunk = decoder.decode(value, { stream: true });
-          fullResponse += chunk;
-          onStream(chunk);
+          
+          const chunk = new TextDecoder().decode(value);
+          const lines = chunk.split('\n').filter(line => line.trim() !== '');
+          
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const jsonStr = line.slice(6);
+              if (jsonStr === '[DONE]') continue;
+              
+              try {
+                const json = JSON.parse(jsonStr);
+                const content = json.choices[0]?.delta?.content;
+                if (content) result += content;
+              } catch (e) {
+                console.error('解析响应数据出错:', e);
+              }
+            }
+          }
         }
-
-        return fullResponse;
+        
+        return result;
       } catch (error) {
         if (i < retryCount - 1) {
           console.log(`Retrying... (${i + 1}/${retryCount})`);
@@ -97,4 +102,6 @@ export const api = {
     }
     throw new Error('达到最大重试次数，请稍后再试');
   }
-};
+}
+
+export const api = APIService.getInstance();
