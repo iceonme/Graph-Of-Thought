@@ -23,7 +23,7 @@ interface ChatNodeProps {
 
 function ChatNode({ data, selected }: ChatNodeProps) {
   const [showDeleteButton, setShowDeleteButton] = useState(false);
-  const provider = data.llmConfig ? PROVIDERS.find(p => p.id === data.llmConfig.providerId) : null;
+  const provider = { id: 'openai', name: 'OpenAI' };
 
   return (
     <div 

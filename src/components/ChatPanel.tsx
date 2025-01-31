@@ -31,11 +31,7 @@ function ChatPanel({
   const [dragActive, setDragActive] = useState(false);
   const chatInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const {
-    selectedProviders,
-    toggleProvider,
-    handleModelChange
-  } = useLLM();
+  const { handleModelChange } = useLLM();
 
   const handleTextSelection = useCallback((e: MouseEvent) => {
     const selection = window.getSelection();
@@ -144,7 +140,7 @@ function ChatPanel({
                 开始你的第一个问题，创建对话流程图。后续可以通过选中文本进行追问，或继续对话来扩展你的思维导图。
               </p>
               <div className="mt-4 w-full max-w-md">
-                {/* MultiModelSelector removed */}
+                {/* Model selection removed */}
               </div>
             </div>
 
