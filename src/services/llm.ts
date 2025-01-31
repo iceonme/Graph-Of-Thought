@@ -1,16 +1,16 @@
+
 import { ChatMessage, LLMConfig } from '../types/llm';
 
 export class LLMService {
-  private apiKey: string;
   private config: LLMConfig;
 
-  constructor(apiKey: string, config: LLMConfig) {
-    this.apiKey = apiKey;
+  constructor(config: LLMConfig) {
     this.config = config;
   }
 
   async chat(messages: ChatMessage[]): Promise<string> {
-    if (!this.apiKey) {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
       throw new Error('OpenAI API key is not set');
     }
     
@@ -19,16 +19,22 @@ export class LLMService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`
+          'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
+          model: this.config.model,
           messages,
-          ...this.config
+          temperature: this.config.temperature || 0.7,
+          max_tokens: this.config.max_tokens || 1000,
+          top_p: this.config.top_p || 1,
+          frequency_penalty: this.config.frequency_penalty || 0,
+          presence_penalty: this.config.presence_penalty || 0
         })
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const error = await response.json();
+        throw new Error(error.error?.message || `HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
