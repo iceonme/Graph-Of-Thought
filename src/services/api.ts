@@ -14,9 +14,9 @@ export class APIService {
   }
 
   async chat(messages: ChatMessage[], config: LLMConfig): Promise<string> {
-    const apiKey = import.meta.env.VITE_OPENAI_API_KEY || import.meta.env.VITE_DEEPSEEK_API_KEY;
+    const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY;
     if (!apiKey) {
-      throw new Error('API key not found - please set VITE_OPENAI_API_KEY or VITE_DEEPSEEK_API_KEY in Secrets');
+      throw new Error('API key not found - please set VITE_DEEPSEEK_API_KEY in Secrets');
     }
 
     try {
@@ -24,16 +24,17 @@ export class APIService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
+          'Authorization': `Bearer ${apiKey}`,
+          'Accept': 'application/json'
         },
         body: JSON.stringify({
           model: "deepseek-chat",
-          messages,
-          temperature: config.temperature || 0.7,
-          max_tokens: config.max_tokens || 1000,
-          top_p: config.top_p || 1,
-          frequency_penalty: config.frequency_penalty || 0,
-          presence_penalty: config.presence_penalty || 0,
+          messages: messages.map(msg => ({
+            role: msg.role,
+            content: msg.content
+          })),
+          temperature: 0.7,
+          max_tokens: 2000,
           stream: false
         })
       });
