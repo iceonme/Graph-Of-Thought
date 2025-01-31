@@ -230,18 +230,44 @@ function ChatPanel({
                   <>
                     <div>
                       <h3 className="text-sm font-medium text-gray-500 mb-2">问题</h3>
-                      <div className="prose prose-sm max-w-none">
-                        <div className="text-gray-700">
+                      <div className="prose prose-sm max-w-none markdown-body">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                          className="markdown-body text-sm prose prose-sm max-w-none"
+                          components={{
+                            p: ({node, ...props}) => <p className="my-1" {...props} />,
+                            pre: ({node, ...props}) => <pre className="bg-gray-50 rounded p-2" {...props} />,
+                            code: ({node, inline, ...props}) => 
+                              inline ? 
+                                <code className="bg-gray-100 px-1 rounded" {...props} /> :
+                                <code {...props} />
+                          }}
+                        >
                           {node?.data.content}
-                        </div>
+                        </ReactMarkdown>
                       </div>
                     </div>
 
                     <div>
                       <h3 className="text-sm font-medium text-gray-500 mb-2">回答</h3>
-                      <div className="prose prose-sm max-w-none">
+                      <div className="prose prose-sm max-w-none markdown-body">
                         <div className={`${node?.data.error ? 'text-red-600' : 'text-gray-700'}`}>
-                          {node?.data.response}
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                            className="markdown-body text-sm prose prose-sm max-w-none"
+                            components={{
+                              p: ({node, ...props}) => <p className="my-1" {...props} />,
+                              pre: ({node, ...props}) => <pre className="bg-gray-50 rounded p-2" {...props} />,
+                              code: ({node, inline, ...props}) => 
+                                inline ? 
+                                  <code className="bg-gray-100 px-1 rounded" {...props} /> :
+                                  <code {...props} />
+                            }}
+                          >
+                            {node?.data.response}
+                          </ReactMarkdown>
                           {node?.data.error && (
                             <div className="mt-4">
                               <button

@@ -64,22 +64,8 @@ function ChatNode({ data, selected }: ChatNodeProps) {
         <div className="space-y-3">
           <div className="bg-gray-50 rounded-lg p-3">
             <p className="font-medium text-sm text-blue-600 mb-1">问题：</p>
-            <div className="text-gray-600 text-sm markdown-body">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw, rehypeSanitize]}
-                className="markdown-body text-sm prose prose-sm max-w-none"
-                components={{
-                  p: ({node, ...props}) => <p className="my-1" {...props} />,
-                  pre: ({node, ...props}) => <pre className="bg-gray-50 rounded p-2" {...props} />,
-                  code: ({node, inline, ...props}) => 
-                    inline ? 
-                      <code className="bg-gray-100 px-1 rounded" {...props} /> :
-                      <code {...props} />
-                }}
-              >
-                {data.content}
-              </ReactMarkdown>
+            <div className="text-gray-600 text-sm line-clamp-2">
+              <div>{data.content}</div>
             </div>
           </div>
 
