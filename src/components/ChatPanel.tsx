@@ -239,6 +239,19 @@ function ChatPanel({
                           remarkPlugins={[remarkGfm]}
                           rehypePlugins={[rehypeRaw, rehypeSanitize]}
                           className="markdown-body"
+                          components={{
+                            code: ({node, inline, className, children, ...props}) => {
+                              if (inline) {
+                                return <code className={className} {...props}>{children}</code>;
+                              }
+                              return (
+                                <pre className={className}>
+                                  <code {...props}>{children}</code>
+                                </pre>
+                              );
+                            },
+                            p: ({node, children, ...props}) => <p className="mb-4" {...props}>{children}</p>
+                          }}
                         >
                           {node?.data.content || ''}
                         </ReactMarkdown>
@@ -253,6 +266,19 @@ function ChatPanel({
                             remarkPlugins={[remarkGfm]}
                             rehypePlugins={[rehypeRaw, rehypeSanitize]}
                             className="markdown-body"
+                            components={{
+                              code: ({node, inline, className, children, ...props}) => {
+                                if (inline) {
+                                  return <code className={className} {...props}>{children}</code>;
+                                }
+                                return (
+                                  <pre className={className}>
+                                    <code {...props}>{children}</code>
+                                  </pre>
+                                );
+                              },
+                              p: ({node, children, ...props}) => <p className="mb-4" {...props}>{children}</p>
+                            }}
                           >
                             {node?.data.response || ''}
                           </ReactMarkdown>
