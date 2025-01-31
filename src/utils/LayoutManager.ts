@@ -61,7 +61,7 @@ export class LayoutManager {
     return position;
   }
 
-  static getNewNodePosition(nodes: Node[], parentNode?: Node): Position {
+  static getNewNodePosition(nodes: Node[], parentNode?: Node, edges: Edge[] = []): Position {
     if (nodes.length === 0) {
       return this.snapToGrid({ x: 100, y: 100 });
     }

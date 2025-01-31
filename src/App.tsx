@@ -126,7 +126,7 @@ function App() {
 
     const newNodes: Node[] = [];
     const newEdges: Edge[] = [];
-    const basePosition = LayoutManager.getNewNodePosition(nodes, parentNode);
+    const basePosition = LayoutManager.getNewNodePosition(nodes, parentNode, edges);
 
     const { providerId, model } = provider;
 
@@ -165,7 +165,7 @@ function App() {
     setSelectedNode(newNodes[0]);
     setIsCreatingEmptyNode(false);
     updateSelectedNode(newNodes[0].id);
-  }, [nodes, selectedModel, setNodes, setEdges, updateSelectedNode]);
+  }, [nodes, edges, selectedModel, setNodes, setEdges, updateSelectedNode]);
 
   const handleAskFollowUp = useCallback((parentNode: Node, question: string, selectedText: string) => {
     const provider = {
@@ -175,7 +175,7 @@ function App() {
 
     const newNodes: Node[] = [];
     const newEdges: Edge[] = [];
-    const basePosition = LayoutManager.getNewNodePosition(nodes, parentNode);
+    const basePosition = LayoutManager.getNewNodePosition(nodes, parentNode, edges);
 
     const { providerId, model } = provider;
 
@@ -213,7 +213,7 @@ function App() {
     setEdges((eds) => [...eds, ...newEdges]);
     setSelectedNode(newNodes[0]);
     updateSelectedNode(newNodes[0].id);
-  }, [nodes, selectedModel, setNodes, setEdges, updateSelectedNode]);
+  }, [nodes, edges, selectedModel, setNodes, setEdges, updateSelectedNode]);
 
   const handleNewEmptyNode = useCallback(() => {
     const newNodeId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
