@@ -363,16 +363,31 @@ function App() {
       });
 
       // 准备对话消息
-      let contextMessage = selectedText ? 
-        `关于"${selectedText}"，${question}` : 
-        parentNode.data.content + "\n\n" + parentNode.data.response + "\n\n" + question;
-
-      const messages = [
-        {
-          role: 'user',
-          content: contextMessage
-        }
-      ];
+      let messages = [];
+      
+      if (selectedText && selectedText !== '继续对话') {
+        messages = [
+          {
+            role: 'user',
+            content: `关于"${selectedText}"，${question}`
+          }
+        ];
+      } else {
+        messages = [
+          {
+            role: 'user',
+            content: parentNode.data.content
+          },
+          {
+            role: 'assistant',
+            content: parentNode.data.response
+          },
+          {
+            role: 'user',
+            content: question
+          }
+        ];
+      }
 
       // 使用统一的流式处理函数
       const response = await handleStreamingResponse(newNodeId, messages, newNode);
