@@ -268,6 +268,47 @@ function App() {
     }
   }, [nodes, edges, selectedModel, setNodes, setEdges, updateSelectedNode]);
 
+  const handleStreamingResponse = async (newNodeId: string, messages: any[], newNode: Node) => {
+    const llmService = new LLMService({
+      model: selectedModel
+    });
+    
+    let currentResponse = '';
+    
+    try {
+      const result = await llmService.chat(messages, (content) => {
+        currentResponse += content;
+        
+        // 更新对话页
+        setSelectedNode(prev => prev && prev.id === newNodeId ? {
+          ...prev,
+          data: {
+            ...prev.data,
+            response: currentResponse
+          }
+        } : prev);
+        
+        // 更新卡片
+        setNodes((nds) => nds.map(node => 
+          node.id === newNodeId 
+            ? {
+                ...node,
+                data: {
+                  ...node.data,
+                  response: currentResponse
+                }
+              }
+            : node
+        ));
+      });
+      
+      return result;
+    } catch (error) {
+      console.error('Error in streaming response:', error);
+      throw error;
+    }
+  };
+
   const handleAskFollowUp = useCallback(async (parentNode: Node, question: string, selectedText: string) => {
     try {
       const provider = {
@@ -337,10 +378,9 @@ function App() {
       }
     ];
 
-    // 获取回答
-    const response = await llmService.chat(messages);
-
-    // 更新节点的回答
+    // 使用统一的流式处理函数
+    const response = await handleStreamingResponse(newNodeId, messages, newNode);
+    
     const updatedNode = {
       ...newNode,
       data: {
@@ -348,10 +388,7 @@ function App() {
         response
       }
     };
-
-    setNodes((nds) => nds.map(node => 
-      node.id === newNodeId ? updatedNode : node
-    ));
+    
     setSelectedNode(updatedNode);
 
   } catch (error) {
