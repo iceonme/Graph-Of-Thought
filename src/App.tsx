@@ -200,7 +200,7 @@ function App() {
       // 调用 API 获取回答
       const response = await llmService.chat(messages);
 
-      // 更新节点的回答
+      // 更新节点状态并获取回答
       setNodes((nds) => nds.map(node => 
         node.id === newNodeId 
           ? {
@@ -214,7 +214,7 @@ function App() {
       ));
 
       // 获取回答并流式更新
-      const response = await llmService.chat(messages, (content) => {
+      const result = await llmService.chat(messages, (content) => {
         setNodes((nds) => nds.map(node => 
           node.id === newNodeId 
             ? {
@@ -232,7 +232,7 @@ function App() {
         ...newNode,
         data: {
           ...newNode.data,
-          response
+          response: result
         }
       };
       
