@@ -3,7 +3,7 @@ import { Node } from 'reactflow';
 import FloatingToolbar from './FloatingToolbar';
 import QuestionDialog from './QuestionDialog';
 import { useLLM } from '../hooks/useLLM';
-import 'github-markdown-css';
+import 'github-markdown-css/github-markdown.css';
 
 interface ChatPanelProps {
   node: Node | null;

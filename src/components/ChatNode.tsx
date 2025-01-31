@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import { PROVIDERS } from '../types/llm';
-import 'github-markdown-css';
+import 'github-markdown-css/github-markdown.css';
 
 interface ChatNodeProps {
   data: { 

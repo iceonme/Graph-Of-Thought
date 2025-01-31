@@ -2,6 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+@import 'github-markdown-css';
+
+.markdown-body {
+  background-color: transparent !important;
+  font-size: 14px !important;
+  color: inherit !important;
+}
+
+.markdown-body p {
+  margin: 0.5em 0 !important;
+  line-height: 1.5 !important;
+}
+
+.markdown-body pre {
+  background-color: #f6f8fa !important;
+  border-radius: 6px !important;
+  padding: 16px !important;
+  overflow: auto !important;
+}
+
+.markdown-body code {
+  background-color: rgba(175, 184, 193, 0.2) !important;
+  border-radius: 4px !important;
+  padding: 0.2em 0.4em !important;
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
