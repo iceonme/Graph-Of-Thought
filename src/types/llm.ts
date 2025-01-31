@@ -1,3 +1,4 @@
+
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
   content: string;
@@ -13,3 +14,11 @@ export interface LLMConfig {
 }
 
 export const OPENAI_MODELS = ['gpt-4', 'gpt-3.5-turbo'];
+
+export const PROVIDERS = [
+  {
+    id: 'openai',
+    name: 'OpenAI',
+    models: OPENAI_MODELS
+  }
+];
