@@ -240,8 +240,18 @@ function ChatPanel({
                     <div>
                       <h3 className="text-sm font-medium text-gray-500 mb-2">回答</h3>
                       <div className="prose prose-sm max-w-none">
-                        <div className="text-gray-700">
+                        <div className={`${node?.data.error ? 'text-red-600' : 'text-gray-700'}`}>
                           {node?.data.response}
+                          {node?.data.error && (
+                            <div className="mt-4">
+                              <button
+                                onClick={() => handleChatSubmit({preventDefault: () => {}} as React.FormEvent)}
+                                className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                              >
+                                重试
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
