@@ -2,6 +2,7 @@ import React, { memo, useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import { PROVIDERS } from '../types/llm';
+import '@uiw/react-markdown-preview/markdown.css';
 
 interface ChatNodeProps {
   data: { 
@@ -68,16 +69,7 @@ function ChatNode({ data, selected }: ChatNodeProps) {
           <div className="bg-blue-50 rounded-lg p-3">
             <p className="font-medium text-sm text-blue-600 mb-1">回答</p>
             <div className="text-gray-600 text-sm line-clamp-2">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw, rehypeSanitize]}
-                className="markdown-body text-sm"
-                components={{
-                  p: ({node, ...props}) => <p className="my-1" {...props} />
-                }}
-              >
-                {data.response}
-              </ReactMarkdown>
+              <MarkdownPreview source={data.response} />
             </div>
           </div>
         </div>
