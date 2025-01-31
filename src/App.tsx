@@ -119,7 +119,7 @@ function App() {
     return nodes.filter(node => inputEdges.some(edge => edge.source === node.id));
   };
 
-  const createNewNodes = useCallback((question: string, parentNode?: Node) => {
+  const createNewNodes = useCallback(async (question: string, parentNode?: Node) => {
     const provider = {
       providerId: 'openai',
       model: selectedModel
@@ -161,11 +161,72 @@ function App() {
     newNodes.push(newNode);
 
 
-    setNodes((nds) => [...nds.map(n => ({ ...n, selected: false })), ...newNodes]);
-    setEdges((eds) => [...eds, ...newEdges]);
-    setSelectedNode(newNodes[0]);
-    setIsCreatingEmptyNode(false);
-    updateSelectedNode(newNodes[0].id);
+    try {
+      // 创建 LLMService 实例
+      const llmService = new LLMService({
+        model: selectedModel
+      });
+
+      // 准备对话消息
+      const messages = [
+        {
+          role: 'user',
+          content: question
+        }
+      ];
+
+      // 如果有父节点，将其内容添加到上下文
+      if (parentNode) {
+        messages.unshift(
+          {
+            role: 'user',
+            content: parentNode.data.content
+          },
+          {
+            role: 'assistant',
+            content: parentNode.data.response
+          }
+        );
+      }
+
+      // 更新节点状态为等待中
+      setNodes((nds) => [...nds.map(n => ({ ...n, selected: false })), ...newNodes]);
+      setEdges((eds) => [...eds, ...newEdges]);
+      setSelectedNode(newNodes[0]);
+
+      // 调用 API 获取回答
+      const response = await llmService.chat(messages);
+
+      // 更新节点的回答
+      setNodes((nds) => nds.map(node => 
+        node.id === newNodeId
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                response
+              }
+            }
+          : node
+      ));
+
+      setIsCreatingEmptyNode(false);
+      updateSelectedNode(newNodeId);
+    } catch (error) {
+      console.error('Error creating node:', error);
+      // 更新节点显示错误信息
+      setNodes((nds) => nds.map(node => 
+        node.id === newNodeId
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                response: '抱歉，发生了错误：' + (error instanceof Error ? error.message : String(error))
+              }
+            }
+          : node
+      ));
+    }
   }, [nodes, edges, selectedModel, setNodes, setEdges, updateSelectedNode]);
 
   const handleAskFollowUp = useCallback((parentNode: Node, question: string, selectedText: string) => {

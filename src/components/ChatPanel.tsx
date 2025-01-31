@@ -70,20 +70,25 @@ function ChatPanel({
     }, 0);
   };
 
-  const handleChatSubmit = (e: React.FormEvent) => {
+  const handleChatSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!chatInput.trim()) return;
 
-    if (node && !isCreatingEmpty && onAskFollowUp) {
-      onAskFollowUp(node, chatInput, '继续对话');
-    } else if (onInitialQuestion) {
-      onInitialQuestion(chatInput);
-    }
+    try {
+      if (node && !isCreatingEmpty && onAskFollowUp) {
+        onAskFollowUp(node, chatInput, '继续对话');
+      } else if (onInitialQuestion) {
+        onInitialQuestion(chatInput);
+      }
 
-    setChatInput('');
-    setTimeout(() => {
-      chatInputRef.current?.focus();
-    }, 0);
+      setChatInput('');
+      setTimeout(() => {
+        chatInputRef.current?.focus();
+      }, 0);
+    } catch (error) {
+      console.error('Error submitting chat:', error);
+      // TODO: Add error handling UI
+    }
   };
 
   const handleFileUploadClick = () => {
