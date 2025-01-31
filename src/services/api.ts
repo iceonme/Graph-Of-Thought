@@ -3,7 +3,7 @@ import { ChatMessage, LLMConfig } from '../types/llm';
 
 export class APIService {
   private static instance: APIService;
-  private baseURL: string = 'https://api.openai.com/v1';
+  private baseURL: string = 'https://api.deepseek.com/v1';
 
   private constructor() {}
 
