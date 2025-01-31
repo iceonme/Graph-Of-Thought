@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import { Node } from 'reactflow';
 import FloatingToolbar from './FloatingToolbar';
 import QuestionDialog from './QuestionDialog';
-import MultiModelSelector from './MultiModelSelector';
+import ModelSelector from './ModelSelector';
 import { useLLM } from '../hooks/useLLM';
 import 'github-markdown-css';
 

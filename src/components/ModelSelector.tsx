@@ -1,41 +1,26 @@
 import React from 'react';
-import { PROVIDERS } from '../types/llm';
+import { OPENAI_MODELS } from '../types/llm';
 
 interface ModelSelectorProps {
-  selectedProvider: string;
   selectedModel: string;
-  onProviderChange: (providerId: string) => void;
   onModelChange: (model: string) => void;
+  className?: string;
 }
 
 export default function ModelSelector({
-  selectedProvider,
   selectedModel,
-  onProviderChange,
-  onModelChange
+  onModelChange,
+  className = ''
 }: ModelSelectorProps) {
-  const currentProvider = PROVIDERS.find(p => p.id === selectedProvider);
-
   return (
-    <div className="flex items-center gap-3">
-      <select
-        value={selectedProvider}
-        onChange={(e) => onProviderChange(e.target.value)}
-        className="px-2 py-1 bg-white border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        {PROVIDERS.map(provider => (
-          <option key={provider.id} value={provider.id}>
-            {provider.name}
-          </option>
-        ))}
-      </select>
-
+    <div className={`space-y-4 ${className}`}>
+      <div className="text-sm font-medium text-gray-700 mb-2">选择模型</div>
       <select
         value={selectedModel}
         onChange={(e) => onModelChange(e.target.value)}
         className="px-2 py-1 bg-white border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
-        {currentProvider?.models.map(model => (
+        {OPENAI_MODELS.map(model => (
           <option key={model} value={model}>
             {model}
           </option>

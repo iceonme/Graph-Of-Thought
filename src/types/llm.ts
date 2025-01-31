@@ -12,30 +12,4 @@ export interface LLMConfig {
   presence_penalty?: number;
 }
 
-export interface LLMProvider {
-  id: string;
-  name: string;
-  models: string[];
-  baseUrl: string;
-}
-
-export const PROVIDERS: LLMProvider[] = [
-  {
-    id: 'openai',
-    name: 'OpenAI',
-    models: ['gpt-4', 'gpt-3.5-turbo'],
-    baseUrl: 'https://api.openai.com/v1'
-  },
-  {
-    id: 'deepseek',
-    name: 'DeepSeek',
-    models: ['deepseek-chat', 'deepseek-coder'],
-    baseUrl: 'https://api.deepseek.com/v1'
-  },
-  {
-    id: 'anthropic',
-    name: 'Anthropic',
-    models: ['claude-2', 'claude-instant-1'],
-    baseUrl: 'https://api.anthropic.com/v1'
-  }
-];
+export const OPENAI_MODELS = ['gpt-4', 'gpt-3.5-turbo'];
