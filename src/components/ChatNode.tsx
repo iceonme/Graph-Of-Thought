@@ -61,15 +61,15 @@ function ChatNode({ data, selected }: ChatNodeProps) {
         <div className="space-y-3">
           <div className="bg-gray-50 rounded-lg p-3">
             <p className="font-medium text-sm text-blue-600 mb-1">问题：</p>
-            <div className="text-gray-600 text-sm line-clamp-2">
-              <MarkdownPreview source={data.content} />
+            <div className="text-gray-600 text-sm line-clamp-2 prose prose-sm max-w-none">
+              {data.content}
             </div>
           </div>
 
           <div className="bg-blue-50 rounded-lg p-3">
             <p className="font-medium text-sm text-blue-600 mb-1">回答</p>
-            <div className="text-gray-600 text-sm line-clamp-2">
-              <MarkdownPreview source={data.response} />
+            <div className="text-gray-600 text-sm line-clamp-2 prose prose-sm max-w-none">
+              {data.response}
             </div>
           </div>
         </div>
