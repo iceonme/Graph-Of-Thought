@@ -15,9 +15,9 @@ export class APIService {
   }
 
   async chat(messages: ChatMessage[], config: LLMConfig): Promise<string> {
-    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+    const apiKey = import.meta.env.VITE_OPENAI_API_KEY || import.meta.env.VITE_DEEPSEEK_API_KEY;
     if (!apiKey) {
-      throw new Error('API key not found');
+      throw new Error('API key not found - please set VITE_OPENAI_API_KEY or VITE_DEEPSEEK_API_KEY in Secrets');
     }
 
     try {
