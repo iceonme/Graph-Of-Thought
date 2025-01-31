@@ -272,13 +272,13 @@ function App() {
     const llmService = new LLMService({
       model: selectedModel
     });
-    
+
     let currentResponse = '';
-    
+
     try {
       const result = await llmService.chat(messages, (content) => {
         currentResponse += content;
-        
+
         // 更新对话页
         setSelectedNode(prev => prev && prev.id === newNodeId ? {
           ...prev,
@@ -287,7 +287,7 @@ function App() {
             response: currentResponse
           }
         } : prev);
-        
+
         // 更新卡片
         setNodes((nds) => nds.map(node => 
           node.id === newNodeId 
@@ -301,7 +301,7 @@ function App() {
             : node
         ));
       });
-      
+
       return result;
     } catch (error) {
       console.error('Error in streaming response:', error);
@@ -322,94 +322,94 @@ function App() {
 
       const { providerId, model } = provider;
 
-    const newNodeId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const newNodeId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-    const newNode: Node = {
-      id: newNodeId,
-      type: 'chatNode',
-      position: {
-        x: basePosition.x,
-        y: basePosition.y
-      },
-      data: {
-        label: `${selectedText ? `追问: ${selectedText.slice(0, 20)}...` : '继续对话'} (${providerId})`,
-        content: question,
-        response: '等待回答...',
-        llmConfig: {
-          providerId,
-          model
-        }
-      },
-      selected: true
-    };
-
-    const newEdge: Edge = {
-      id: `e${parentNode.id}-${newNodeId}`,
-      source: parentNode.id,
-      target: newNodeId,
-    };
-
-    newNodes.push(newNode);
-    newEdges.push(newEdge);
-
-    setNodes((nds) => [...nds.map(n => ({ ...n, selected: false })), ...newNodes]);
-    setEdges((eds) => [...eds, ...newEdges]);
-    setSelectedNode(newNodes[0]);
-    updateSelectedNode(newNodes[0].id);
-
-    // 创建 LLM 服务实例
-    const llmService = new LLMService({
-      model: selectedModel
-    });
-
-    // 准备对话消息
-    const messages = [
-      {
-        role: 'user',
-        content: parentNode.data.content
-      },
-      {
-        role: 'assistant',
-        content: parentNode.data.response
-      },
-      {
-        role: 'user',
-        content: question
-      }
-    ];
-
-    // 使用统一的流式处理函数
-    const response = await handleStreamingResponse(newNodeId, messages, newNode);
-    
-    const updatedNode = {
-      ...newNode,
-      data: {
-        ...newNode.data,
-        response
-      }
-    };
-    
-    setSelectedNode(updatedNode);
-
-  } catch (error) {
-    console.error('Error in follow-up:', error);
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    setError(errorMessage);
-
-    setNodes((nds) => nds.map(node => 
-      node.id === newNodeId
-        ? {
-            ...node,
-            data: {
-              ...node.data,
-              response: '抱歉，发生了错误：' + errorMessage,
-              error: true
-            }
+      const newNode: Node = {
+        id: newNodeId,
+        type: 'chatNode',
+        position: {
+          x: basePosition.x,
+          y: basePosition.y
+        },
+        data: {
+          label: `${selectedText ? `追问: ${selectedText.slice(0, 20)}...` : '继续对话'} (${providerId})`,
+          content: question,
+          response: '等待回答...',
+          llmConfig: {
+            providerId,
+            model
           }
-        : node
-    ));
-    setTimeout(() => setError(null), 5000);
-  }
+        },
+        selected: true
+      };
+
+      const newEdge: Edge = {
+        id: `e${parentNode.id}-${newNodeId}`,
+        source: parentNode.id,
+        target: newNodeId,
+      };
+
+      newNodes.push(newNode);
+      newEdges.push(newEdge);
+
+      setNodes((nds) => [...nds.map(n => ({ ...n, selected: false })), ...newNodes]);
+      setEdges((eds) => [...eds, ...newEdges]);
+      setSelectedNode(newNodes[0]);
+      updateSelectedNode(newNodes[0].id);
+
+      // 创建 LLM 服务实例
+      const llmService = new LLMService({
+        model: selectedModel
+      });
+
+      // 准备对话消息
+      const messages = [
+        {
+          role: 'user',
+          content: parentNode.data.content
+        },
+        {
+          role: 'assistant',
+          content: parentNode.data.response
+        },
+        {
+          role: 'user',
+          content: selectedText ? `关于"${selectedText}"，${question}` : question
+        }
+      ];
+
+      // 使用统一的流式处理函数
+      const response = await handleStreamingResponse(newNodeId, messages, newNode);
+
+      const updatedNode = {
+        ...newNode,
+        data: {
+          ...newNode.data,
+          response
+        }
+      };
+
+      setSelectedNode(updatedNode);
+
+    } catch (error) {
+      console.error('Error in follow-up:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setError(errorMessage);
+
+      setNodes((nds) => nds.map(node => 
+        node.id === newNodeId
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                response: '抱歉，发生了错误：' + errorMessage,
+                error: true
+              }
+            }
+          : node
+      ));
+      setTimeout(() => setError(null), 5000);
+    }
   }, [nodes, edges, selectedModel, setNodes, setEdges, updateSelectedNode]);
 
   const handleNewEmptyNode = useCallback(() => {
