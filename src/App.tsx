@@ -201,17 +201,18 @@ function App() {
       const response = await llmService.chat(messages);
 
       // 更新节点的回答
+      const updatedNode = {
+        ...newNode,
+        data: {
+          ...newNode.data,
+          response
+        }
+      };
+      
       setNodes((nds) => nds.map(node => 
-        node.id === newNodeId
-          ? {
-              ...node,
-              data: {
-                ...node.data,
-                response
-              }
-            }
-          : node
+        node.id === newNodeId ? updatedNode : node
       ));
+      setSelectedNode(updatedNode);
 
       setIsCreatingEmptyNode(false);
       updateSelectedNode(newNodeId);
@@ -312,17 +313,18 @@ function App() {
     const response = await llmService.chat(messages);
 
     // 更新节点的回答
+    const updatedNode = {
+      ...newNode,
+      data: {
+        ...newNode.data,
+        response
+      }
+    };
+    
     setNodes((nds) => nds.map(node => 
-      node.id === newNodeId
-        ? {
-            ...node,
-            data: {
-              ...node.data,
-              response
-            }
-          }
-        : node
+      node.id === newNodeId ? updatedNode : node
     ));
+    setSelectedNode(updatedNode);
 
   } catch (error) {
     console.error('Error in follow-up:', error);
