@@ -201,11 +201,11 @@ function App() {
       const response = await llmService.chat(messages);
 
       let currentResponse = '';
-      
+
       // 获取回答并同步更新对话页和卡片
       const result = await llmService.chat(messages, (content) => {
         currentResponse += content;
-        
+
         // 先更新对话页(selectedNode)
         setSelectedNode(prev => prev && prev.id === newNodeId ? {
           ...prev,
@@ -214,7 +214,7 @@ function App() {
             response: currentResponse
           }
         } : prev);
-        
+
         // 再更新卡片
         setNodes((nds) => nds.map(node => 
           node.id === newNodeId 
@@ -236,7 +236,7 @@ function App() {
           response: result
         }
       };
-      
+
       setNodes((nds) => nds.map(node => 
         node.id === newNodeId ? updatedNode : node
       ));
@@ -348,7 +348,7 @@ function App() {
         response
       }
     };
-    
+
     setNodes((nds) => nds.map(node => 
       node.id === newNodeId ? updatedNode : node
     ));

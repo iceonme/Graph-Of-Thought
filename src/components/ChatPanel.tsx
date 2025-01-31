@@ -51,15 +51,19 @@ function ChatPanel({
     setShowQuestionDialog(true);
   };
 
-  const handleQuestionSubmit = (question: string) => {
-    if (node && onAskFollowUp) {
-      onAskFollowUp(node, question, selectedText);
+  const handleQuestionSubmit = async (question: string) => {
+    try {
+      if (node && onAskFollowUp) {
+        await onAskFollowUp(node, question, selectedText);
+      }
+      setShowQuestionDialog(false);
+      setSelectedText('');
+      setTimeout(() => {
+        chatInputRef.current?.focus();
+      }, 0);
+    } catch (error) {
+      console.error('Error submitting follow-up question:', error);
     }
-    setShowQuestionDialog(false);
-    setSelectedText('');
-    setTimeout(() => {
-      chatInputRef.current?.focus();
-    }, 0);
   };
 
   const handleQuestionDialogClose = () => {
