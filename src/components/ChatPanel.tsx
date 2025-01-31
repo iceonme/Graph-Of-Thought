@@ -239,7 +239,7 @@ function ChatPanel({
                       <h3 className="text-sm font-medium text-gray-500 mb-2">回答</h3>
                       <div className="prose prose-sm max-w-none markdown-body">
                         <div className={`${node?.data.error ? 'text-red-600' : 'text-gray-700'}`}>
-                          {node?.data.response || ''}
+                          <MarkdownPreview source={node?.data.response || ''} />
                           {node?.data.error && (
                             <div className="mt-4">
                               <button
