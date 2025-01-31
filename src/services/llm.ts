@@ -9,7 +9,7 @@ export class LLMService {
   }
 
   async chat(messages: ChatMessage[]): Promise<string> {
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
     if (!apiKey) {
       throw new Error('OpenAI API key is not set');
     }
