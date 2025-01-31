@@ -38,7 +38,7 @@ export class APIService {
             })),
             temperature: 0.7,
             max_tokens: 2000,
-            stream: false
+            stream: true
           })
         });
 
@@ -55,15 +55,41 @@ export class APIService {
           
           if (i < retryCount - 1) {
             console.log(`Retrying... (${i + 1}/${retryCount})`);
-            await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i))); // 指数退避重试
+            await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
             continue;
           }
           
           throw new Error(`DeepSeek API 错误 (尝试 ${retryCount} 次后失败): ${errorText}`);
         }
 
-        const data = await response.json();
-        return data.choices[0].message.content;
+        const reader = response.body?.getReader();
+        if (!reader) throw new Error('无法获取响应流');
+
+        let result = '';
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          const chunk = new TextDecoder().decode(value);
+          const lines = chunk.split('\n').filter(line => line.trim() !== '');
+          
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const jsonStr = line.slice(6);
+              if (jsonStr === '[DONE]') continue;
+              
+              try {
+                const json = JSON.parse(jsonStr);
+                const content = json.choices[0]?.delta?.content;
+                if (content) result += content;
+              } catch (e) {
+                console.error('解析响应数据出错:', e);
+              }
+            }
+          }
+        }
+        
+        return result;
       } catch (error) {
         if (i < retryCount - 1) {
           console.log(`Retrying... (${i + 1}/${retryCount})`);
