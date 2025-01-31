@@ -332,7 +332,7 @@ function App() {
           y: basePosition.y
         },
         data: {
-          label: `${selectedText ? `追问: ${selectedText.slice(0, 20)}...` : '继续对话'} (${providerId})`,
+          label: `${selectedText ? `追问: ${selectedText.slice(0, 20)}...` : '进一步讨论'} (${providerId})`,
           content: question,
           response: '等待回答...',
           llmConfig: {
@@ -363,18 +363,14 @@ function App() {
       });
 
       // 准备对话消息
+      let contextMessage = selectedText ? 
+        `关于"${selectedText}"，${question}` : 
+        parentNode.data.content + "\n\n" + parentNode.data.response + "\n\n" + question;
+
       const messages = [
         {
           role: 'user',
-          content: parentNode.data.content
-        },
-        {
-          role: 'assistant',
-          content: parentNode.data.response
-        },
-        {
-          role: 'user',
-          content: selectedText ? `关于"${selectedText}"，${question}` : question
+          content: contextMessage
         }
       ];
 
