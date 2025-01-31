@@ -16,6 +16,7 @@ import ChatPanel from './components/ChatPanel';
 import NewNodeButton from './components/NewNodeButton';
 import { LayoutManager } from './utils/LayoutManager';
 import { useLLM } from './hooks/useLLM';
+import { LLMService } from './services/llm';
 
 const nodeTypes = {
   chatNode: ChatNode,
