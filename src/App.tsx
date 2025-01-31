@@ -230,17 +230,18 @@ function App() {
     }
   }, [nodes, edges, selectedModel, setNodes, setEdges, updateSelectedNode]);
 
-  const handleAskFollowUp = useCallback((parentNode: Node, question: string, selectedText: string) => {
-    const provider = {
-      providerId: 'openai',
-      model: selectedModel
-    };
+  const handleAskFollowUp = useCallback(async (parentNode: Node, question: string, selectedText: string) => {
+    try {
+      const provider = {
+        providerId: 'deepseek',
+        model: selectedModel
+      };
 
-    const newNodes: Node[] = [];
-    const newEdges: Edge[] = [];
-    const basePosition = LayoutManager.getNewNodePosition(nodes, parentNode, edges);
+      const newNodes: Node[] = [];
+      const newEdges: Edge[] = [];
+      const basePosition = LayoutManager.getNewNodePosition(nodes, parentNode, edges);
 
-    const { providerId, model } = provider;
+      const { providerId, model } = provider;
 
     const newNodeId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -252,7 +253,7 @@ function App() {
         y: basePosition.y
       },
       data: {
-        label: `追问: ${selectedText.slice(0, 20)}... (${providerId})`,
+        label: `${selectedText ? `追问: ${selectedText.slice(0, 20)}...` : '继续对话'} (${providerId})`,
         content: question,
         response: '等待回答...',
         llmConfig: {
@@ -276,6 +277,58 @@ function App() {
     setEdges((eds) => [...eds, ...newEdges]);
     setSelectedNode(newNodes[0]);
     updateSelectedNode(newNodes[0].id);
+
+    // 创建 LLM 服务实例
+    const llmService = new LLMService({
+      model: selectedModel
+    });
+
+    // 准备对话消息
+    const messages = [
+      {
+        role: 'user',
+        content: parentNode.data.content
+      },
+      {
+        role: 'assistant',
+        content: parentNode.data.response
+      },
+      {
+        role: 'user',
+        content: question
+      }
+    ];
+
+    // 获取回答
+    const response = await llmService.chat(messages);
+
+    // 更新节点的回答
+    setNodes((nds) => nds.map(node => 
+      node.id === newNodeId
+        ? {
+            ...node,
+            data: {
+              ...node.data,
+              response
+            }
+          }
+        : node
+    ));
+
+  } catch (error) {
+    console.error('Error in follow-up:', error);
+    setNodes((nds) => nds.map(node => 
+      node.id === newNodeId
+        ? {
+            ...node,
+            data: {
+              ...node.data,
+              response: '抱歉，发生了错误：' + (error instanceof Error ? error.message : String(error))
+            }
+          }
+        : node
+    ));
+  }
   }, [nodes, edges, selectedModel, setNodes, setEdges, updateSelectedNode]);
 
   const handleNewEmptyNode = useCallback(() => {
