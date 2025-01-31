@@ -26,6 +26,7 @@ const initialNodes: Node[] = [];
 const initialEdges: Edge[] = [];
 
 function App() {
+  const [apiKey, setApiKey] = useState(process.env.OPENAI_API_KEY || '');
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
