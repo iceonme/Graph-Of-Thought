@@ -56,9 +56,7 @@ function ChatNode({ data, selected }: ChatNodeProps) {
           <h3 className="font-bold text-gray-800 text-lg">{data.label}</h3>
           {data.llmConfig && (
             <div className="mt-1 text-xs text-gray-500 flex items-center gap-1">
-              <span>{provider?.name}</span>
-              <span>·</span>
-              <span>{data.llmConfig.model}</span>
+              <span>{data.llmConfig?.model}</span>
             </div>
           )}
         </div>
