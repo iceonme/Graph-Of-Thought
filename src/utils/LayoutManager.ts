@@ -14,6 +14,26 @@ export class LayoutManager {
     GRID: 50
   };
 
+  static getFileNodesPositions(nodes: Node[], fileCount: number): Position[] {
+    const positions: Position[] = [];
+    const startPosition = { x: 0, y: 0 };
+    
+    for (let i = 0; i < fileCount; i++) {
+      let position = {
+        x: startPosition.x + (i * this.SPACING.FILE_NODE),
+        y: startPosition.y
+      };
+      
+      while (this.isPositionOccupied(position, nodes)) {
+        position.y += this.SPACING.VERTICAL;
+      }
+      
+      positions.push(this.snapToGrid(position));
+    }
+    
+    return positions;
+  }
+
   private static isPositionOccupied(position: Position, nodes: Node[]): boolean {
     return nodes.some(node => {
       const distance = {
