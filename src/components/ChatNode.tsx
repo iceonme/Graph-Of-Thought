@@ -1,26 +1,27 @@
+
 import React, { memo, useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import MarkdownPreview from '@uiw/react-markdown-preview';
-import { PROVIDERS } from '../types/llm';
 import '@uiw/react-markdown-preview/markdown.css';
 
-interface ChatNodeProps {
-  data: { 
-    label: string; 
-    content: string; 
-    response: string;
-    llmConfig?: {
-      providerId: string;
-      model: string;
-    };
-    onDelete?: () => void;
+interface ChatNodeData {
+  label: string;
+  content: string;
+  response: string;
+  llmConfig?: {
+    providerId: string;
+    model: string;
   };
+  onDelete?: () => void;
+}
+
+interface ChatNodeProps {
+  data: ChatNodeData;
   selected?: boolean;
 }
 
 function ChatNode({ data, selected }: ChatNodeProps) {
   const [showDeleteButton, setShowDeleteButton] = useState(false);
-  const provider = { id: 'openai', name: 'OpenAI' };
 
   return (
     <div 
@@ -28,11 +29,7 @@ function ChatNode({ data, selected }: ChatNodeProps) {
       onMouseEnter={() => setShowDeleteButton(true)}
       onMouseLeave={() => setShowDeleteButton(false)}
     >
-      <Handle
-        type="target"
-        position={Position.Top}
-        style={{ top: -6 }}
-      />
+      <Handle type="target" position={Position.Top} style={{ top: -6 }} />
       
       {(showDeleteButton || selected) && data.onDelete && (
         <button
@@ -48,38 +45,32 @@ function ChatNode({ data, selected }: ChatNodeProps) {
         </button>
       )}
       
-      <div className="p-4">
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-2 mb-3">
+      <div className="p-4 space-y-4">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-2">
           <h3 className="font-bold text-gray-800 text-lg">{data.label}</h3>
           {data.llmConfig && (
-            <div className="mt-1 text-xs text-gray-500 flex items-center gap-1">
-              <span>{data.llmConfig?.model}</span>
+            <div className="mt-1 text-xs text-gray-500">
+              <span>{data.llmConfig.model}</span>
             </div>
           )}
         </div>
 
-        <div className="space-y-3">
-          <div className="bg-gray-50 rounded-lg p-3">
-            <p className="font-medium text-sm text-blue-600 mb-1">问题：</p>
-            <div className="text-gray-600 text-sm line-clamp-2 prose prose-sm max-w-none">
-              {data.content}
-            </div>
+        <div className="bg-gray-50 rounded-lg p-3">
+          <p className="font-medium text-sm text-blue-600 mb-1">问题：</p>
+          <div className="text-gray-600 text-sm line-clamp-2 prose prose-sm max-w-none">
+            {data.content}
           </div>
+        </div>
 
-          <div className="bg-blue-50 rounded-lg p-3">
-            <p className="font-medium text-sm text-blue-600 mb-1">回答</p>
-            <div className="text-gray-600 text-sm line-clamp-2 prose prose-sm max-w-none">
-              {data.response}
-            </div>
+        <div className="bg-blue-50 rounded-lg p-3">
+          <p className="font-medium text-sm text-blue-600 mb-1">回答：</p>
+          <div className="text-gray-600 text-sm line-clamp-2 prose prose-sm max-w-none">
+            <MarkdownPreview source={data.response} />
           </div>
         </div>
       </div>
 
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        style={{ bottom: -6 }}
-      />
+      <Handle type="source" position={Position.Bottom} style={{ bottom: -6 }} />
     </div>
   );
 }
