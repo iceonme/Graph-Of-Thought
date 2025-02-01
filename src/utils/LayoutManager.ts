@@ -88,4 +88,21 @@ export class LayoutManager {
 
     return position;
   }
+
+  static getChatNodePositionForFiles(nodes: Node[], fileNodes: Node[]): Position {
+    const avgX = fileNodes.reduce((sum, node) => sum + node.position.x, 0) / fileNodes.length;
+    const maxY = Math.max(...fileNodes.map(node => node.position.y));
+    
+    const basePosition = {
+      x: avgX,
+      y: maxY + this.SPACING.VERTICAL
+    };
+    
+    let position = this.snapToGrid(basePosition);
+    while (this.isPositionOccupied(position, nodes)) {
+      position.y += this.SPACING.VERTICAL;
+    }
+    
+    return position;
+  }
 }
