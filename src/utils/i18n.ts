@@ -1,7 +1,7 @@
 
 export const translations = {
   en: {
-    welcome: "Welcome to AI Chat",
+    welcome: "Welcome to Chat2D",
     startChat: "Start with your first question to create a dialogue flow chart.",
     enterQuestion: "Enter your first question...",
     globalFiles: "Global Files",
@@ -12,7 +12,7 @@ export const translations = {
     cancel: "Cancel",
   },
   zh: {
-    welcome: "欢迎使用 AI 对话",
+    welcome: "欢迎使用 Chat2D",
     startChat: "开始你的第一个问题，创建对话流程图。",
     enterQuestion: "输入你的第一个问题...",
     globalFiles: "全局文件",
