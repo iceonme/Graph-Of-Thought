@@ -635,10 +635,15 @@ function App() {
         </div>
       ) : (
         <div className="w-full h-full flex">
-          <div style={{ width: `${leftPanelWidth}%` }} className="h-full p-4">
-        <div className="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden relative">
-          <ReactFlow
-            nodes={nodesWithDelete}
+          {isMobileView ? (
+            <div className="w-full h-full p-4">
+              <TabView flowContent={flowContent} chatContent={chatContent} />
+            </div>
+          ) : (
+            <div style={{ width: `${leftPanelWidth}%` }} className="h-full p-4">
+              <div className="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden relative">
+                <ReactFlow
+                  nodes={nodesWithDelete}
             edges={edges}
             onNodesChange={handleNodesChange}
             onEdgesChange={onEdgesChange}
