@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Node } from 'reactflow';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import FloatingToolbar from './FloatingToolbar';
@@ -9,15 +9,10 @@ interface ChatPanelProps {
   node: Node | null;
   isCreatingEmpty: boolean;
   inputNodes: Node[];
-  childNodes: Node[];
   onAskFollowUp?: (parentNode: Node, question: string, selectedText: string) => void;
   onInitialQuestion?: (question: string) => void;
   onFileUpload?: (file: File) => void;
   onUpdateNodeLLM?: (nodeId: string, providerId: string, model: string) => void;
-  onNodeSelect?: (node: Node) => void;
-  selectedModel?: string;
-  setSelectedModel?: (model: string) => void;
-  error?: string | null;
 }
 
 function ChatPanel({ 
@@ -27,8 +22,7 @@ function ChatPanel({
   onAskFollowUp, 
   onInitialQuestion,
   onFileUpload,
-  onUpdateNodeLLM,
-  onNodeSelect
+  onUpdateNodeLLM
 }: ChatPanelProps) {
   const [selectedText, setSelectedText] = useState('');
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -79,33 +73,6 @@ function ChatPanel({
       chatInputRef.current?.focus();
     }, 0);
   };
-
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  const handleWheel = useCallback((e: WheelEvent) => {
-    if (!contentRef.current || !node || !onNodeSelect) return;
-
-    const { scrollTop, scrollHeight, clientHeight } = contentRef.current;
-    const tolerance = 1;
-    const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) <= tolerance;
-    const isAtTop = scrollTop <= tolerance;
-
-    if (isAtBottom && e.deltaY > 0 && childNodes?.[0]) {
-      e.preventDefault();
-      onNodeSelect(childNodes[0]);
-    } else if (isAtTop && e.deltaY < 0 && inputNodes?.[inputNodes.length - 1]) {
-      e.preventDefault();
-      onNodeSelect(inputNodes[inputNodes.length - 1]);
-    }
-  }, [node, childNodes, inputNodes, onNodeSelect]);
-
-  React.useEffect(() => {
-    const content = contentRef.current;
-    if (content) {
-      content.addEventListener('wheel', handleWheel, { passive: false });
-      return () => content.removeEventListener('wheel', handleWheel);
-    }
-  }, [node, inputNodes, onNodeSelect]);
 
   const handleChatSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -264,7 +231,7 @@ function ChatPanel({
               )}
             </div>
 
-            <div ref={contentRef} className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto">
               <div className="p-6 space-y-6">
                 {isCreatingEmpty ? (
                   <div className="flex flex-col items-center justify-center h-full space-y-4">
