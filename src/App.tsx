@@ -14,6 +14,7 @@ import ChatNode from './components/ChatNode';
 import FileNode from './components/FileNode';
 import ChatPanel from './components/ChatPanel';
 import NewNodeButton from './components/NewNodeButton';
+import TabView from './components/TabView';
 import { LayoutManager } from './utils/LayoutManager';
 import { useLLM } from './hooks/useLLM';
 import { LLMService } from './services/llm';
