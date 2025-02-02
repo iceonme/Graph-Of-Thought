@@ -138,15 +138,24 @@ function ChatPanel({
     };
   }, [handleTextSelection]);
 
+  const t = (key: string) => {
+    // Placeholder for translation function - replace with actual implementation
+    switch (key) {
+      case 'welcome': return '欢迎使用 AI 对话';
+      case 'startChat': return '开始你的第一个问题，创建对话流程图。后续可以通过选中文本进行追问，或继续对话来扩展你的思维导图。';
+      default: return key;
+    }
+  };
+
   return (
     <>
       <div className="w-full h-full bg-white rounded-lg shadow-lg flex flex-col">
         {!node ? (
           <div className="flex-1 p-6 flex flex-col">
             <div className="flex-1 flex flex-col items-center justify-center space-y-4">
-              <h1 className="text-2xl font-bold text-gray-900">欢迎使用 AI 对话</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{t('welcome')}</h1>
               <p className="text-gray-500 text-center max-w-md">
-                开始你的第一个问题，创建对话流程图。后续可以通过选中文本进行追问，或继续对话来扩展你的思维导图。
+                {t('startChat')}
               </p>
               <div className="mt-4 w-full max-w-md">
               </div>
