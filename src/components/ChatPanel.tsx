@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Node } from 'reactflow';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import FloatingToolbar from './FloatingToolbar';
@@ -14,6 +14,9 @@ interface ChatPanelProps {
   onFileUpload?: (file: File) => void;
   onUpdateNodeLLM?: (nodeId: string, providerId: string, model: string) => void;
   onNodeSelect?: (node: Node) => void;
+  selectedModel?: string;
+  setSelectedModel?: (model: string) => void;
+  error?: string | null;
 }
 
 function ChatPanel({ 
