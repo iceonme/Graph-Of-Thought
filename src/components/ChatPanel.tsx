@@ -85,7 +85,7 @@ function ChatPanel({
     if (!contentRef.current || !node || !onNodeSelect) return;
 
     const { scrollTop, scrollHeight, clientHeight } = contentRef.current;
-    const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 1;
+    const isAtBottom = Math.ceil(scrollTop + clientHeight) >= scrollHeight;
     const isAtTop = scrollTop === 0;
     const nodes = inputNodes.concat(node);
     const currentIndex = nodes.findIndex(n => n.id === node.id);
