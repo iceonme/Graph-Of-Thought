@@ -81,25 +81,20 @@ function ChatPanel({
   const contentRef = useRef<HTMLDivElement>(null);
 
   const handleWheel = (e: WheelEvent) => {
-    if (!contentRef.current || !node) return;
+    if (!contentRef.current || !node || !onNodeSelect) return;
     
     const { scrollTop, scrollHeight, clientHeight } = contentRef.current;
     const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 1;
     const isAtTop = scrollTop === 0;
+    const nodes = inputNodes.concat(node);
+    const currentIndex = nodes.findIndex(n => n.id === node.id);
 
-    // Only handle navigation when content is at extremes
-    if ((isAtBottom && e.deltaY > 0) || (isAtTop && e.deltaY < 0)) {
+    if (isAtBottom && e.deltaY > 0 && currentIndex < nodes.length - 1) {
       e.preventDefault();
-      const nodes = inputNodes.concat(node);
-      const currentIndex = nodes.findIndex(n => n.id === node.id);
-      
-      if (e.deltaY > 0 && currentIndex < nodes.length - 1) {
-        // Navigate to next node
-        if (onNodeSelect) onNodeSelect(nodes[currentIndex + 1]);
-      } else if (e.deltaY < 0 && currentIndex > 0) {
-        // Navigate to previous node
-        if (onNodeSelect) onNodeSelect(nodes[currentIndex - 1]);
-      }
+      onNodeSelect(nodes[currentIndex + 1]);
+    } else if (isAtTop && e.deltaY < 0 && currentIndex > 0) {
+      e.preventDefault();
+      onNodeSelect(nodes[currentIndex - 1]);
     }
   };
 
