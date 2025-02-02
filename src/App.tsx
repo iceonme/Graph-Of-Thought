@@ -30,9 +30,6 @@ const initialEdges: Edge[] = [];
 function App() {
   const [apiKey, setApiKey] = useState(import.meta.env.VITE_OPENAI_API_KEY || '');
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [showQuestionDialog, setShowQuestionDialog] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<Array<{name: string; content: any; type: string}>>([]);
-  const [uploadedFileNodes, setUploadedFileNodes] = useState<Node[]>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [isCreatingEmptyNode, setIsCreatingEmptyNode] = useState(false);
@@ -509,22 +506,20 @@ function App() {
         fileNodes.push(fileNode);
 
         if (fileNodes.length === uploadQueue.files.length) {
-          setNodes(nds => [...nds.map(n => ({ ...n, selected: false })), ...fileNodes]);
-          setEdges(eds => [...eds]);
-          
-          // Show question dialog for uploaded files
-          const fileContents = fileNodes.map(node => ({
-            name: node.data.fileInfo.name,
-            content: node.data.fileInfo.content,
-            type: node.data.fileInfo.type
-          }));
-          
-          // Open question dialog
-          setShowQuestionDialog(true);
-          setUploadedFiles(fileContents);
-          setUploadedFileNodes(fileNodes);
-          setUploadQueue({ files: [], processing: false });
-        }
+          const chatNodePosition = LayoutManager.getChatNodePositionForFiles([...nodes, ...fileNodes], fileNodes);
+          const chatNodeId = `chat-${timestamp}-${Math.random().toString(36).substr(2, 9)}`;
+
+          const newChatNode: Node = {
+            id: chatNodeId,
+            type: 'chatNode',
+            position: chatNodePosition,
+            selected: true,
+            data: {
+              label: `分析文件：${fileNodes.map(n => n.data.fileInfo.name).join(', ')}`,
+              content: `请分析这些文件的内容，并提供主要观点和见解。`,
+              response: '等待回答...'
+            }
+          };
 
           const newEdges: Edge[] = fileNodes.map(fileNode => ({
             id: `e${fileNode.id}-${chatNodeId}`,
@@ -582,44 +577,6 @@ function App() {
     setIsDragging(true);
     document.body.style.cursor = 'col-resize';
   }, []);
-
-  const handleFileQuestion = useCallback((question: string) => {
-    if (!uploadedFileNodes.length) return;
-    
-    const timestamp = Date.now();
-    const chatNodeId = `chat-${timestamp}-${Math.random().toString(36).substr(2, 9)}`;
-    const chatNodePosition = LayoutManager.getChatNodePositionForFiles([...nodes, ...uploadedFileNodes], uploadedFileNodes);
-    
-    const newChatNode: Node = {
-      id: chatNodeId,
-      type: 'chatNode',
-      position: chatNodePosition,
-      selected: true,
-      data: {
-        label: `文件分析：${uploadedFileNodes.map(n => n.data.fileInfo.name).join(', ')}`,
-        content: question,
-        response: '等待回答...',
-        fileContext: uploadedFiles
-      }
-    };
-
-    const newEdges: Edge[] = uploadedFileNodes.map(fileNode => ({
-      id: `e${fileNode.id}-${chatNodeId}`,
-      source: fileNode.id,
-      target: chatNodeId,
-    }));
-
-    setNodes(nds => [...nds, newChatNode]);
-    setEdges(eds => [...eds, ...newEdges]);
-    setSelectedNode(newChatNode);
-    updateSelectedNode(chatNodeId);
-    setShowQuestionDialog(false);
-    setUploadedFiles([]);
-    setUploadedFileNodes([]);
-
-    // Handle LLM response
-    createNewNodesWithFiles(question, uploadedFiles);
-  }, [nodes, uploadedFileNodes, uploadedFiles, setNodes, setEdges, updateSelectedNode]);
 
   const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
 
@@ -695,18 +652,6 @@ function App() {
           </div>
         )}
       </div>
-      {showQuestionDialog && (
-        <QuestionDialog
-          onSubmit={handleFileQuestion}
-          onClose={() => {
-            setShowQuestionDialog(false);
-            setUploadedFiles([]);
-            setUploadedFileNodes([]);
-          }}
-          title="询问文件相关问题"
-          placeholder="请输入您要询问的问题..."
-        />
-      )}
     </div>
   );
 }

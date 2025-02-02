@@ -119,19 +119,9 @@ function GlobalFiles({ files, onFileUpload }: GlobalFilesProps) {
               {(file.data.fileInfo.size / 1024).toFixed(1)} KB
             </div>
             <div className="flex justify-end gap-2">
-              <button 
-            onClick={() => {
-              const content = file.data.fileInfo.content;
-              if (file.data.fileInfo.type.startsWith('text/')) {
-                alert(content);
-              } else if (file.data.fileInfo.type.startsWith('image/')) {
-                window.open(content, '_blank');
-              }
-            }}
-            className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded hover:bg-gray-200"
-          >
-            预览
-          </button>
+              <button className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded hover:bg-gray-200">
+                预览
+              </button>
               <button className="px-2 py-1 text-xs bg-red-50 text-red-600 rounded hover:bg-red-100">
                 删除
               </button>
