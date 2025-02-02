@@ -138,7 +138,14 @@ function ChatPanel({
     };
   }, [handleTextSelection]);
 
-  const { t } = useLanguage();
+  const t = (key: string) => {
+    // Placeholder for translation function - replace with actual implementation
+    switch (key) {
+      case 'welcome': return '欢迎使用 AI 对话';
+      case 'startChat': return '开始你的第一个问题，创建对话流程图。后续可以通过选中文本进行追问，或继续对话来扩展你的思维导图。';
+      default: return key;
+    }
+  };
 
   return (
     <>
