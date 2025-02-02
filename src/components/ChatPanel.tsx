@@ -100,13 +100,13 @@ function ChatPanel({
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     const content = contentRef.current;
     if (content) {
       content.addEventListener('wheel', handleWheel, { passive: false });
       return () => content.removeEventListener('wheel', handleWheel);
     }
-  }, [node, inputNodes]);
+  }, [node, inputNodes, onNodeSelect]);
 
   const handleChatSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

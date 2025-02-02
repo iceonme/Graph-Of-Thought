@@ -614,6 +614,7 @@ function App() {
           node={selectedNode}
           isCreatingEmpty={isCreatingEmptyNode}
           inputNodes={selectedNode ? getNodeInputs(selectedNode.id) : []}
+          onNodeSelect={(node) => setSelectedNode(node)}
           onAskFollowUp={handleAskFollowUp}
           onInitialQuestion={createNewNodes}
           onFileUpload={handleFileUpload}
