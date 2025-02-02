@@ -26,7 +26,8 @@ function ChatPanel({
   onAskFollowUp, 
   onInitialQuestion,
   onFileUpload,
-  onUpdateNodeLLM
+  onUpdateNodeLLM,
+  onNodeSelect
 }: ChatPanelProps) {
   const [selectedText, setSelectedText] = useState('');
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -82,7 +83,7 @@ function ChatPanel({
 
   const handleWheel = (e: WheelEvent) => {
     if (!contentRef.current || !node || !onNodeSelect) return;
-    
+
     const { scrollTop, scrollHeight, clientHeight } = contentRef.current;
     const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 1;
     const isAtTop = scrollTop === 0;
