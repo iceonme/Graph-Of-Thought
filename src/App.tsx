@@ -629,18 +629,19 @@ function App() {
 
   return (
     <div className="w-screen h-screen bg-gray-50">
-      {isMobileView ? (
-        <div className="w-full h-full p-4">
-          <TabView flowContent={flowContent} chatContent={chatContent} />
-        </div>
-      ) : (
-        <div className="w-full h-full flex">
-          <div style={{ width: `${leftPanelWidth}%` }} className="h-full p-4">
-              {flowContent}
+      <div className="w-full h-full flex">
+        {isMobileView ? (
+          <div className="w-full h-full p-4">
+            <TabView flowContent={flowContent} chatContent={chatContent} />
           </div>
+        ) : (
+          <>
+            <div style={{ width: `${leftPanelWidth}%` }} className="h-full p-4">
+              {flowContent}
+            </div>
 
-      <div
-        className="w-2 hover:bg-blue-200 cursor-col-resize transition-colors relative group size-handler"
+            <div 
+              className="w-2 hover:bg-blue-200 cursor-col-resize transition-colors relative group size-handler"
         onMouseDown={handleDragStart}
       >
         <div className="absolute inset-y-0 -left-1 -right-1 group-hover:bg-blue-100 transition-colors" />
