@@ -90,8 +90,13 @@ function ChatPanel({
     const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) <= tolerance;
     const isAtTop = scrollTop <= tolerance;
     
-    const currentChildNodes = node ? childNodes : [];
-    const currentInputNodes = node ? inputNodes : [];
+    if (isAtBottom && e.deltaY > 0 && node && childNodes.length > 0) {
+      e.preventDefault();
+      onNodeSelect(childNodes[0]);
+    } else if (isAtTop && e.deltaY < 0 && node && inputNodes.length > 0) {
+      e.preventDefault();
+      onNodeSelect(inputNodes[inputNodes.length - 1]);
+    }
     
     if (isAtBottom && e.deltaY > 0 && currentChildNodes.length > 0) {
       e.preventDefault();
