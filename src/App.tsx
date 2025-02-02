@@ -577,9 +577,65 @@ function App() {
     document.body.style.cursor = 'col-resize';
   }, []);
 
+  const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const isMobileView = windowWidth < 768; // 768px is the typical tablet breakpoint
+
+  const flowContent = (
+    <div className="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden relative">
+      <ReactFlow
+        nodes={nodesWithDelete}
+        edges={edges}
+        onNodesChange={handleNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        onNodeClick={onNodeClick}
+        nodeTypes={nodeTypes}
+        zoomOnScroll={true}
+        defaultViewport={{ x: 0, y: 0, zoom: 0.6 }}
+        minZoom={0.2}
+        maxZoom={1.5}
+        className="bg-gray-50"
+      >
+        <Background color="#e2e8f0" gap={16} />
+        <Controls />
+      </ReactFlow>
+      <NewNodeButton onClick={handleNewEmptyNode} />
+    </div>
+  );
+
+  const chatContent = (
+    <ChatPanel 
+      node={selectedNode}
+      isCreatingEmpty={isCreatingEmptyNode}
+      inputNodes={selectedNode ? getNodeInputs(selectedNode.id) : []}
+      onAskFollowUp={handleAskFollowUp}
+      onInitialQuestion={createNewNodes}
+      onFileUpload={handleFileUpload}
+      onUpdateNodeLLM={handleUpdateNodeLLM}
+      selectedModel={selectedModel}
+      setSelectedModel={setSelectedModel}
+      error={error}
+    />
+  );
+
   return (
-    <div className="w-screen h-screen flex bg-gray-50">
-      <div style={{ width: `${leftPanelWidth}%` }} className="h-full p-4">
+    <div className="w-screen h-screen bg-gray-50">
+      {isMobileView ? (
+        <div className="w-full h-full p-4">
+          <TabView flowContent={flowContent} chatContent={chatContent} />
+        </div>
+      ) : (
+        <div className="w-full h-full flex">
+          <div style={{ width: `${leftPanelWidth}%` }} className="h-full p-4">
         <div className="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden relative">
           <ReactFlow
             nodes={nodesWithDelete}
@@ -623,6 +679,24 @@ function App() {
           error={error} // Pass error state to ChatPanel
         />
       </div>
+    </div>
+          
+          {!isMobileView && (
+            <div
+              className="w-2 hover:bg-blue-200 cursor-col-resize transition-colors relative group size-handler"
+              onMouseDown={handleDragStart}
+            >
+              <div className="absolute inset-y-0 -left-1 -right-1 group-hover:bg-blue-100 transition-colors" />
+            </div>
+          )}
+
+          {!isMobileView && (
+            <div style={{ width: `${100 - leftPanelWidth}%` }} className="h-full p-4">
+              {chatContent}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
