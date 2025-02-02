@@ -124,7 +124,7 @@ function App() {
 
   const createNewNodes = useCallback(async (question: string, parentNode?: Node) => {
     const provider = {
-      providerId: 'openai',
+      providerId: 'deepseek',
       model: selectedModel
     };
 
