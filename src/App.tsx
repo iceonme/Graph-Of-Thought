@@ -122,6 +122,11 @@ function App() {
     return nodes.filter(node => inputEdges.some(edge => edge.source === node.id));
   };
 
+  const getNodeChildren = (nodeId: string): Node[] => {
+    const outputEdges = edges.filter(edge => edge.source === nodeId);
+    return nodes.filter(node => outputEdges.some(edge => edge.target === node.id));
+  };
+
   const createNewNodes = useCallback(async (question: string, parentNode?: Node) => {
     const provider = {
       providerId: 'deepseek',
@@ -364,7 +369,7 @@ function App() {
 
       // 准备对话消息
       let messages = [];
-      
+
       if (selectedText && selectedText !== '继续对话') {
         messages = [
           {
@@ -614,6 +619,7 @@ function App() {
           node={selectedNode}
           isCreatingEmpty={isCreatingEmptyNode}
           inputNodes={selectedNode ? getNodeInputs(selectedNode.id) : []}
+          childNodes={selectedNode ? getNodeChildren(selectedNode.id) : []}
           onNodeSelect={setSelectedNode}
           onAskFollowUp={handleAskFollowUp}
           onInitialQuestion={createNewNodes}

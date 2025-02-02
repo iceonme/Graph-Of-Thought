@@ -9,6 +9,7 @@ interface ChatPanelProps {
   node: Node | null;
   isCreatingEmpty: boolean;
   inputNodes: Node[];
+  childNodes: Node[];
   onAskFollowUp?: (parentNode: Node, question: string, selectedText: string) => void;
   onInitialQuestion?: (question: string) => void;
   onFileUpload?: (file: File) => void;
@@ -85,18 +86,22 @@ function ChatPanel({
     if (!contentRef.current || !node || !onNodeSelect) return;
 
     const { scrollTop, scrollHeight, clientHeight } = contentRef.current;
-    const tolerance = 1; // Add small tolerance for floating point differences
+    const tolerance = 1;
     const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) <= tolerance;
     const isAtTop = scrollTop <= tolerance;
-    const nodes = inputNodes.concat(node);
-    const currentIndex = nodes.findIndex(n => n.id === node.id);
 
-    if (isAtBottom && e.deltaY > 0 && currentIndex < nodes.length - 1) {
+    // Combine all related nodes
+    const allNodes = [...inputNodes, node, ...childNodes];
+    const currentIndex = allNodes.findIndex(n => n.id === node.id);
+
+    if (isAtBottom && e.deltaY > 0 && currentIndex < allNodes.length - 1) {
+      // Scroll down to next node (could be a child)
       e.preventDefault();
-      onNodeSelect(nodes[currentIndex + 1]);
+      onNodeSelect(allNodes[currentIndex + 1]);
     } else if (isAtTop && e.deltaY < 0 && currentIndex > 0) {
+      // Scroll up to previous node (could be a parent)
       e.preventDefault();
-      onNodeSelect(nodes[currentIndex - 1]);
+      onNodeSelect(allNodes[currentIndex - 1]);
     }
   };
 
