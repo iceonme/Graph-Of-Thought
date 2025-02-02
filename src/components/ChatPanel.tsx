@@ -89,19 +89,13 @@ function ChatPanel({
     const tolerance = 1;
     const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) <= tolerance;
     const isAtTop = scrollTop <= tolerance;
-
-    // Combine all related nodes
-    const allNodes = [...inputNodes, node, ...childNodes];
-    const currentIndex = allNodes.findIndex(n => n.id === node.id);
-
-    if (isAtBottom && e.deltaY > 0 && currentIndex < allNodes.length - 1) {
-      // Scroll down to next node (could be a child)
+    
+    if (isAtBottom && e.deltaY > 0 && childNodes.length > 0) {
       e.preventDefault();
-      onNodeSelect(allNodes[currentIndex + 1]);
-    } else if (isAtTop && e.deltaY < 0 && currentIndex > 0) {
-      // Scroll up to previous node (could be a parent)
+      onNodeSelect(childNodes[0]);
+    } else if (isAtTop && e.deltaY < 0 && inputNodes.length > 0) {
       e.preventDefault();
-      onNodeSelect(allNodes[currentIndex - 1]);
+      onNodeSelect(inputNodes[inputNodes.length - 1]);
     }
   };
 
