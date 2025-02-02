@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Node } from 'reactflow';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import FloatingToolbar from './FloatingToolbar';
