@@ -95,10 +95,10 @@ function ChatPanel({
       
       if (e.deltaY > 0 && currentIndex < nodes.length - 1) {
         // Navigate to next node
-        onNodeSelect?.(nodes[currentIndex + 1]);
+        if (onNodeSelect) onNodeSelect(nodes[currentIndex + 1]);
       } else if (e.deltaY < 0 && currentIndex > 0) {
         // Navigate to previous node
-        onNodeSelect?.(nodes[currentIndex - 1]);
+        if (onNodeSelect) onNodeSelect(nodes[currentIndex - 1]);
       }
     }
   };
