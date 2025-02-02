@@ -13,6 +13,7 @@ interface ChatPanelProps {
   onInitialQuestion?: (question: string) => void;
   onFileUpload?: (file: File) => void;
   onUpdateNodeLLM?: (nodeId: string, providerId: string, model: string) => void;
+  onNodeSelect?: (node: Node) => void;
 }
 
 function ChatPanel({ 
@@ -73,6 +74,39 @@ function ChatPanel({
       chatInputRef.current?.focus();
     }, 0);
   };
+
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const handleWheel = (e: WheelEvent) => {
+    if (!contentRef.current || !node) return;
+    
+    const { scrollTop, scrollHeight, clientHeight } = contentRef.current;
+    const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 1;
+    const isAtTop = scrollTop === 0;
+
+    // Only handle navigation when content is at extremes
+    if ((isAtBottom && e.deltaY > 0) || (isAtTop && e.deltaY < 0)) {
+      e.preventDefault();
+      const nodes = inputNodes.concat(node);
+      const currentIndex = nodes.findIndex(n => n.id === node.id);
+      
+      if (e.deltaY > 0 && currentIndex < nodes.length - 1) {
+        // Navigate to next node
+        onNodeSelect?.(nodes[currentIndex + 1]);
+      } else if (e.deltaY < 0 && currentIndex > 0) {
+        // Navigate to previous node
+        onNodeSelect?.(nodes[currentIndex - 1]);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const content = contentRef.current;
+    if (content) {
+      content.addEventListener('wheel', handleWheel, { passive: false });
+      return () => content.removeEventListener('wheel', handleWheel);
+    }
+  }, [node, inputNodes]);
 
   const handleChatSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -231,7 +265,7 @@ function ChatPanel({
               )}
             </div>
 
-            <div className="flex-1 overflow-y-auto">
+            <div ref={contentRef} className="flex-1 overflow-y-auto">
               <div className="p-6 space-y-6">
                 {isCreatingEmpty ? (
                   <div className="flex flex-col items-center justify-center h-full space-y-4">
