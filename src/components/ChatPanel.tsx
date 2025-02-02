@@ -82,7 +82,7 @@ function ChatPanel({
 
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const handleWheel = (e: WheelEvent) => {
+  const handleWheel = useCallback((e: WheelEvent) => {
     if (!contentRef.current || !node || !onNodeSelect) return;
 
     const { scrollTop, scrollHeight, clientHeight } = contentRef.current;
@@ -90,14 +90,14 @@ function ChatPanel({
     const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) <= tolerance;
     const isAtTop = scrollTop <= tolerance;
     
-    if (isAtBottom && e.deltaY > 0 && childNodes.length > 0) {
+    if (isAtBottom && e.deltaY > 0 && childNodes && childNodes.length > 0) {
       e.preventDefault();
       onNodeSelect(childNodes[0]);
-    } else if (isAtTop && e.deltaY < 0 && inputNodes.length > 0) {
+    } else if (isAtTop && e.deltaY < 0 && inputNodes && inputNodes.length > 0) {
       e.preventDefault();
       onNodeSelect(inputNodes[inputNodes.length - 1]);
     }
-  };
+  }, [node, childNodes, inputNodes, onNodeSelect]);
 
   React.useEffect(() => {
     const content = contentRef.current;
