@@ -635,33 +635,9 @@ function App() {
         </div>
       ) : (
         <div className="w-full h-full flex">
-          {isMobileView ? (
-            <div className="w-full h-full p-4">
-              <TabView flowContent={flowContent} chatContent={chatContent} />
-            </div>
-          ) : (
-            <div style={{ width: `${leftPanelWidth}%` }} className="h-full p-4">
-              <div className="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden relative">
-                <ReactFlow
-                  nodes={nodesWithDelete}
-            edges={edges}
-            onNodesChange={handleNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onNodeClick={onNodeClick}
-            nodeTypes={nodeTypes}
-            zoomOnScroll={true}
-            defaultViewport={{ x: 0, y: 0, zoom: 0.6 }}
-            minZoom={0.2}
-            maxZoom={1.5}
-            className="bg-gray-50"
-          >
-            <Background color="#e2e8f0" gap={16} />
-            <Controls />
-          </ReactFlow>
-          <NewNodeButton onClick={handleNewEmptyNode} />
-        </div>
-      </div>
+          <div style={{ width: `${leftPanelWidth}%` }} className="h-full p-4">
+              {flowContent}
+          </div>
 
       <div
         className="w-2 hover:bg-blue-200 cursor-col-resize transition-colors relative group size-handler"
