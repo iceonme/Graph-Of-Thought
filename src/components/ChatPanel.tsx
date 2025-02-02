@@ -90,18 +90,14 @@ function ChatPanel({
     const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) <= tolerance;
     const isAtTop = scrollTop <= tolerance;
 
-    // Check if there are child or input nodes available before trying to navigate
-    const hasChildNodes = childNodes && childNodes.length > 0;
-    const hasInputNodes = inputNodes && inputNodes.length > 0;
-
-    if (isAtBottom && e.deltaY > 0 && hasChildNodes) {
+    if (isAtBottom && e.deltaY > 0 && childNodes?.[0]) {
       e.preventDefault();
       onNodeSelect(childNodes[0]);
-    } else if (isAtTop && e.deltaY < 0 && hasInputNodes) {
+    } else if (isAtTop && e.deltaY < 0 && inputNodes?.[inputNodes.length - 1]) {
       e.preventDefault();
       onNodeSelect(inputNodes[inputNodes.length - 1]);
     }
-  }, [node, childNodes, inputNodes, onNodeSelect, contentRef]);
+  }, [node, childNodes, inputNodes, onNodeSelect]);
 
   React.useEffect(() => {
     const content = contentRef.current;
