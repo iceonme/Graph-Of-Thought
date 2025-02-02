@@ -629,56 +629,28 @@ function App() {
 
   return (
     <div className="w-screen h-screen bg-gray-50">
-      <div className="w-full h-full flex">
+      <div className="w-full h-full">
         {isMobileView ? (
           <div className="w-full h-full p-4">
             <TabView flowContent={flowContent} chatContent={chatContent} />
           </div>
         ) : (
-          <>
+          <div className="flex w-full h-full">
             <div style={{ width: `${leftPanelWidth}%` }} className="h-full p-4">
               {flowContent}
             </div>
-
-            <div 
-              className="w-2 hover:bg-blue-200 cursor-col-resize transition-colors relative group size-handler"
-        onMouseDown={handleDragStart}
-      >
-        <div className="absolute inset-y-0 -left-1 -right-1 group-hover:bg-blue-100 transition-colors" />
-      </div>
-
-      <div style={{ width: `${100 - leftPanelWidth}%` }} className="h-full p-4">
-        <ChatPanel 
-          node={selectedNode}
-          isCreatingEmpty={isCreatingEmptyNode}
-          inputNodes={selectedNode ? getNodeInputs(selectedNode.id) : []}
-          onAskFollowUp={handleAskFollowUp}
-          onInitialQuestion={createNewNodes}
-          onFileUpload={handleFileUpload}
-          onUpdateNodeLLM={handleUpdateNodeLLM}
-          selectedModel={selectedModel}
-          setSelectedModel={setSelectedModel}
-          error={error} // Pass error state to ChatPanel
-        />
-      </div>
-    </div>
-          
-          {!isMobileView && (
             <div
               className="w-2 hover:bg-blue-200 cursor-col-resize transition-colors relative group size-handler"
               onMouseDown={handleDragStart}
             >
               <div className="absolute inset-y-0 -left-1 -right-1 group-hover:bg-blue-100 transition-colors" />
             </div>
-          )}
-
-          {!isMobileView && (
             <div style={{ width: `${100 - leftPanelWidth}%` }} className="h-full p-4">
               {chatContent}
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
