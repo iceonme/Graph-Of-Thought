@@ -1,4 +1,24 @@
-# Graph-Of-Thought
-## This new chat tool allows collaborate with AI in a non-linear fashion. Transform your thought process into visual representations using graphs that consist of nodes and connections. ; 
 
-[Edit in StackBlitz next-generation editor ⚡️](https://stackblitz.com/~/github.com/iceonme/Graph-Of-Thought)
+# Chat2D
+
+## 简介
+
+Chat2D 是一个创新的 AI 聊天工具，旨在通过图形化思维帮助用户以非线性的方式组织和扩展他们的想法。与传统 AI 聊天工具最大的不同在于，Chat2D 将每次与 AI 的对话内容视为独立的节点，并以图形化的方式进行展示。
+
+## 核心特点
+
+- **非线性对话**：从一维到二维的转变，打破了传统聊天应用中时间线性的限制。用户能够在多个对话主题之间自由切换，使思维过程更加灵活。
+
+- **可视化的聊天思维过程**：通过图形化界面，用户可以直观地查看和管理他们的思维过程。这种可视化效果使用户更容易理解思路的演变，并能有效地发现新的连接和关联。
+
+- **节约 Tokens**：通过精确提问减少不必要的信息传递，提升效率并降低成本。用户可以针对特定内容进行更精准的提问，从而减少无关信息的传递。
+
+- **多样化的思考模式**：用户可以将不同的思维和想法展开为多个节点，每个节点都可以针对不同的问题进行探索。这种多样化的思考方式，能够激发更多创意，提升问题的解决能力。
+
+## 使用方法
+
+1. 启动应用程序并输入您的第一个问题
+2. 查看生成的思维节点，选择文本进行后续追问
+3. 利用图形化工具扩展和合并节点，管理思维过程
+
+[English Version](README_EN.md)
